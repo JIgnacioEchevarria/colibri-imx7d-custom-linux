@@ -1,0 +1,360 @@
+From bed2fc3d39caa730bcc0bf9904da8f15d5b50292 Mon Sep 17 00:00:00 2001
+From: Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
+Date: Thu, 27 Feb 2025 11:29:52 +0100
+Subject: [PATCH 2/2] ARM: dts: apalis/colibri-imx6: Add support for v1.2
+
+Apalis/Colibri iMX6 V1.2 replaced the STMPE811 ADC/touch controller,
+which is EOL, with the TLA2024 ADC and AD7879 touch controller.
+
+Accurately describe the new hardware.
+
+v1.1 of these SoMs is still described by the following DTSI files:
+imx6qdl-apalis.dtsi
+imx6qdl-colibri.dtsi
+
+v1.2 is now supported by a DTSI that modifies v1.1:
+imx6qdl-apalis-v1.2.dtsi
+imx6qdl-colibri-v1.2.dtsi
+
+For each carrier board using these modules, a new DTS file was added
+that includes the v1.1 DTS and modifies it with this v1.2 DTSI.
+
+The original DTS can be used for modules up to and including v1.1.
+
+Upstream-Status: Submitted [https://lore.kernel.org/all/20250307101758.27943-3-ernest.vanhoecke@toradex.com/]
+Signed-off-by: Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
+---
+ arch/arm/boot/dts/nxp/imx/Makefile            |  9 +++
+ .../dts/nxp/imx/imx6dl-colibri-v1.2-aster.dts | 11 ++++
+ .../nxp/imx/imx6dl-colibri-v1.2-eval-v3.dts   | 11 ++++
+ .../nxp/imx/imx6dl-colibri-v1.2-iris-v2.dts   | 11 ++++
+ .../dts/nxp/imx/imx6dl-colibri-v1.2-iris.dts  | 11 ++++
+ .../nxp/imx/imx6q-apalis-v1.2-eval-v1.2.dts   | 11 ++++
+ .../dts/nxp/imx/imx6q-apalis-v1.2-eval.dts    | 11 ++++
+ .../nxp/imx/imx6q-apalis-v1.2-ixora-v1.1.dts  | 11 ++++
+ .../nxp/imx/imx6q-apalis-v1.2-ixora-v1.2.dts  | 11 ++++
+ .../dts/nxp/imx/imx6q-apalis-v1.2-ixora.dts   | 11 ++++
+ .../boot/dts/nxp/imx/imx6qdl-apalis-v1.2.dtsi | 57 +++++++++++++++++++
+ .../dts/nxp/imx/imx6qdl-colibri-v1.2.dtsi     | 57 +++++++++++++++++++
+ 12 files changed, 222 insertions(+)
+ create mode 100644 arch/arm/boot/dts/nxp/imx/imx6dl-colibri-v1.2-aster.dts
+ create mode 100644 arch/arm/boot/dts/nxp/imx/imx6dl-colibri-v1.2-eval-v3.dts
+ create mode 100644 arch/arm/boot/dts/nxp/imx/imx6dl-colibri-v1.2-iris-v2.dts
+ create mode 100644 arch/arm/boot/dts/nxp/imx/imx6dl-colibri-v1.2-iris.dts
+ create mode 100644 arch/arm/boot/dts/nxp/imx/imx6q-apalis-v1.2-eval-v1.2.dts
+ create mode 100644 arch/arm/boot/dts/nxp/imx/imx6q-apalis-v1.2-eval.dts
+ create mode 100644 arch/arm/boot/dts/nxp/imx/imx6q-apalis-v1.2-ixora-v1.1.dts
+ create mode 100644 arch/arm/boot/dts/nxp/imx/imx6q-apalis-v1.2-ixora-v1.2.dts
+ create mode 100644 arch/arm/boot/dts/nxp/imx/imx6q-apalis-v1.2-ixora.dts
+ create mode 100644 arch/arm/boot/dts/nxp/imx/imx6qdl-apalis-v1.2.dtsi
+ create mode 100644 arch/arm/boot/dts/nxp/imx/imx6qdl-colibri-v1.2.dtsi
+
+diff --git a/arch/arm/boot/dts/nxp/imx/Makefile b/arch/arm/boot/dts/nxp/imx/Makefile
+index 3629e343d322..1d26f8c88f4f 100644
+--- a/arch/arm/boot/dts/nxp/imx/Makefile
++++ b/arch/arm/boot/dts/nxp/imx/Makefile
+@@ -63,6 +63,10 @@ dtb-$(CONFIG_SOC_IMX6Q) += \
+ 	imx6dl-colibri-eval-v3.dtb \
+ 	imx6dl-colibri-iris.dtb \
+ 	imx6dl-colibri-iris-v2.dtb \
++	imx6dl-colibri-v1.2-aster.dtb \
++	imx6dl-colibri-v1.2-eval-v3.dtb \
++	imx6dl-colibri-v1.2-iris.dtb \
++	imx6dl-colibri-v1.2-iris-v2.dtb \
+ 	imx6dl-cubox-i.dtb \
+ 	imx6dl-cubox-i-emmc-som-v15.dtb \
+ 	imx6dl-cubox-i-som-v15.dtb \
+@@ -148,6 +152,11 @@ dtb-$(CONFIG_SOC_IMX6Q) += \
+ 	imx6q-apalis-ixora.dtb \
+ 	imx6q-apalis-ixora-v1.1.dtb \
+ 	imx6q-apalis-ixora-v1.2.dtb \
++	imx6q-apalis-v1.2-eval.dtb \
++	imx6q-apalis-v1.2-eval-v1.2.dtb \
++	imx6q-apalis-v1.2-ixora.dtb \
++	imx6q-apalis-v1.2-ixora-v1.1.dtb \
++	imx6q-apalis-v1.2-ixora-v1.2.dtb \
+ 	imx6q-apf6dev.dtb \
+ 	imx6q-arm2.dtb \
+ 	imx6q-b450v3.dtb \
+diff --git a/arch/arm/boot/dts/nxp/imx/imx6dl-colibri-v1.2-aster.dts b/arch/arm/boot/dts/nxp/imx/imx6dl-colibri-v1.2-aster.dts
+new file mode 100644
+index 000000000000..44c78c07f431
+--- /dev/null
++++ b/arch/arm/boot/dts/nxp/imx/imx6dl-colibri-v1.2-aster.dts
+@@ -0,0 +1,11 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/* Copyright (c) 2025 Toradex */
++
++/dts-v1/;
++
++#include "imx6dl-colibri-aster.dts"
++#include "imx6qdl-colibri-v1.2.dtsi"
++
++/ {
++	model = "Toradex Colibri iMX6DL/S V1.2+ on Colibri Aster Board";
++};
+diff --git a/arch/arm/boot/dts/nxp/imx/imx6dl-colibri-v1.2-eval-v3.dts b/arch/arm/boot/dts/nxp/imx/imx6dl-colibri-v1.2-eval-v3.dts
+new file mode 100644
+index 000000000000..93fd0af53a3c
+--- /dev/null
++++ b/arch/arm/boot/dts/nxp/imx/imx6dl-colibri-v1.2-eval-v3.dts
+@@ -0,0 +1,11 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/* Copyright (c) 2025 Toradex */
++
++/dts-v1/;
++
++#include "imx6dl-colibri-eval-v3.dts"
++#include "imx6qdl-colibri-v1.2.dtsi"
++
++/ {
++	model = "Toradex Colibri iMX6DL/S V1.2+ on Colibri Evaluation Board V3";
++};
+diff --git a/arch/arm/boot/dts/nxp/imx/imx6dl-colibri-v1.2-iris-v2.dts b/arch/arm/boot/dts/nxp/imx/imx6dl-colibri-v1.2-iris-v2.dts
+new file mode 100644
+index 000000000000..92d41fc9a13f
+--- /dev/null
++++ b/arch/arm/boot/dts/nxp/imx/imx6dl-colibri-v1.2-iris-v2.dts
+@@ -0,0 +1,11 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/* Copyright (c) 2025 Toradex */
++
++/dts-v1/;
++
++#include "imx6dl-colibri-iris-v2.dts"
++#include "imx6qdl-colibri-v1.2.dtsi"
++
++/ {
++	model = "Toradex Colibri iMX6DL/S V1.2+ on Colibri Iris V2 Board";
++};
+diff --git a/arch/arm/boot/dts/nxp/imx/imx6dl-colibri-v1.2-iris.dts b/arch/arm/boot/dts/nxp/imx/imx6dl-colibri-v1.2-iris.dts
+new file mode 100644
+index 000000000000..c8957948c887
+--- /dev/null
++++ b/arch/arm/boot/dts/nxp/imx/imx6dl-colibri-v1.2-iris.dts
+@@ -0,0 +1,11 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/* Copyright (c) 2025 Toradex */
++
++/dts-v1/;
++
++#include "imx6dl-colibri-iris.dts"
++#include "imx6qdl-colibri-v1.2.dtsi"
++
++/ {
++	model = "Toradex Colibri iMX6DL/S V1.2+ on Colibri Iris Board";
++};
+diff --git a/arch/arm/boot/dts/nxp/imx/imx6q-apalis-v1.2-eval-v1.2.dts b/arch/arm/boot/dts/nxp/imx/imx6q-apalis-v1.2-eval-v1.2.dts
+new file mode 100644
+index 000000000000..908dab57fd87
+--- /dev/null
++++ b/arch/arm/boot/dts/nxp/imx/imx6q-apalis-v1.2-eval-v1.2.dts
+@@ -0,0 +1,11 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/* Copyright (c) 2025 Toradex */
++
++/dts-v1/;
++
++#include "imx6q-apalis-eval-v1.2.dts"
++#include "imx6qdl-apalis-v1.2.dtsi"
++
++/ {
++	model = "Toradex Apalis iMX6Q/D Module V1.2+ on Apalis Evaluation Board v1.2";
++};
+diff --git a/arch/arm/boot/dts/nxp/imx/imx6q-apalis-v1.2-eval.dts b/arch/arm/boot/dts/nxp/imx/imx6q-apalis-v1.2-eval.dts
+new file mode 100644
+index 000000000000..5463d4127382
+--- /dev/null
++++ b/arch/arm/boot/dts/nxp/imx/imx6q-apalis-v1.2-eval.dts
+@@ -0,0 +1,11 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/* Copyright (c) 2025 Toradex */
++
++/dts-v1/;
++
++#include "imx6q-apalis-eval.dts"
++#include "imx6qdl-apalis-v1.2.dtsi"
++
++/ {
++	model = "Toradex Apalis iMX6Q/D Module V1.2+ on Apalis Evaluation Board";
++};
+diff --git a/arch/arm/boot/dts/nxp/imx/imx6q-apalis-v1.2-ixora-v1.1.dts b/arch/arm/boot/dts/nxp/imx/imx6q-apalis-v1.2-ixora-v1.1.dts
+new file mode 100644
+index 000000000000..84eabf81ba84
+--- /dev/null
++++ b/arch/arm/boot/dts/nxp/imx/imx6q-apalis-v1.2-ixora-v1.1.dts
+@@ -0,0 +1,11 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/* Copyright (c) 2025 Toradex */
++
++/dts-v1/;
++
++#include "imx6q-apalis-ixora-v1.1.dts"
++#include "imx6qdl-apalis-v1.2.dtsi"
++
++/ {
++	model = "Toradex Apalis iMX6Q/D Module V1.2+ on Ixora Carrier Board V1.1";
++};
+diff --git a/arch/arm/boot/dts/nxp/imx/imx6q-apalis-v1.2-ixora-v1.2.dts b/arch/arm/boot/dts/nxp/imx/imx6q-apalis-v1.2-ixora-v1.2.dts
+new file mode 100644
+index 000000000000..d7cfab4de457
+--- /dev/null
++++ b/arch/arm/boot/dts/nxp/imx/imx6q-apalis-v1.2-ixora-v1.2.dts
+@@ -0,0 +1,11 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/* Copyright (c) 2025 Toradex */
++
++/dts-v1/;
++
++#include "imx6q-apalis-ixora-v1.2.dts"
++#include "imx6qdl-apalis-v1.2.dtsi"
++
++/ {
++	model = "Toradex Apalis iMX6Q/D Module V1.2+ on Ixora Carrier Board V1.2";
++};
+diff --git a/arch/arm/boot/dts/nxp/imx/imx6q-apalis-v1.2-ixora.dts b/arch/arm/boot/dts/nxp/imx/imx6q-apalis-v1.2-ixora.dts
+new file mode 100644
+index 000000000000..189b074e31ce
+--- /dev/null
++++ b/arch/arm/boot/dts/nxp/imx/imx6q-apalis-v1.2-ixora.dts
+@@ -0,0 +1,11 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/* Copyright (c) 2025 Toradex */
++
++/dts-v1/;
++
++#include "imx6q-apalis-ixora.dts"
++#include "imx6qdl-apalis-v1.2.dtsi"
++
++/ {
++	model = "Toradex Apalis iMX6Q/D Module V1.2+ on Ixora Carrier Board";
++};
+diff --git a/arch/arm/boot/dts/nxp/imx/imx6qdl-apalis-v1.2.dtsi b/arch/arm/boot/dts/nxp/imx/imx6qdl-apalis-v1.2.dtsi
+new file mode 100644
+index 000000000000..83fa04fc9f18
+--- /dev/null
++++ b/arch/arm/boot/dts/nxp/imx/imx6qdl-apalis-v1.2.dtsi
+@@ -0,0 +1,57 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/* Copyright (c) 2025 Toradex */
++
++&i2c2 {
++	/delete-node/ stmpe811@41;
++
++	ad7879_ts: touchscreen@2c {
++		compatible = "adi,ad7879-1";
++		reg = <0x2c>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_touch_int>;
++		interrupts = <10 IRQ_TYPE_LEVEL_LOW>;
++		interrupt-parent = <&gpio4>;
++		touchscreen-max-pressure = <4096>;
++		adi,resistance-plate-x = <120>;
++		adi,first-conversion-delay = /bits/ 8 <3>;
++		adi,acquisition-time = /bits/ 8 <1>;
++		adi,median-filter-size = /bits/ 8 <2>;
++		adi,averaging = /bits/ 8 <1>;
++		adi,conversion-interval = /bits/ 8 <255>;
++	};
++
++	tla2024_adc: adc@49 {
++		compatible = "ti,tla2024";
++		reg = <0x49>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		/* Apalis AN1_ADC0 */
++		channel@4 {
++			reg = <4>;
++			ti,datarate = <4>;
++			ti,gain = <1>;
++		};
++
++		/* Apalis AN1_ADC1 */
++		channel@5 {
++			reg = <5>;
++			ti,datarate = <4>;
++			ti,gain = <1>;
++		};
++
++		/* Apalis AN1_ADC2 */
++		channel@6 {
++			reg = <6>;
++			ti,datarate = <4>;
++			ti,gain = <1>;
++		};
++
++		/* Apalis AN1_TSWIP_ADC3 */
++		channel@7 {
++			reg = <7>;
++			ti,datarate = <4>;
++			ti,gain = <1>;
++		};
++	};
++};
+diff --git a/arch/arm/boot/dts/nxp/imx/imx6qdl-colibri-v1.2.dtsi b/arch/arm/boot/dts/nxp/imx/imx6qdl-colibri-v1.2.dtsi
+new file mode 100644
+index 000000000000..d11bf911b728
+--- /dev/null
++++ b/arch/arm/boot/dts/nxp/imx/imx6qdl-colibri-v1.2.dtsi
+@@ -0,0 +1,57 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/* Copyright (c) 2025 Toradex */
++
++&i2c2 {
++	/delete-node/ stmpe811@41;
++
++	ad7879_ts: touchscreen@2c {
++		compatible = "adi,ad7879-1";
++		reg = <0x2c>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_touch_int>;
++		interrupts = <20 IRQ_TYPE_LEVEL_LOW>;
++		interrupt-parent = <&gpio6>;
++		touchscreen-max-pressure = <4096>;
++		adi,resistance-plate-x = <120>;
++		adi,first-conversion-delay = /bits/ 8 <3>;
++		adi,acquisition-time = /bits/ 8 <1>;
++		adi,median-filter-size = /bits/ 8 <2>;
++		adi,averaging = /bits/ 8 <1>;
++		adi,conversion-interval = /bits/ 8 <255>;
++	};
++
++	tla2024_adc: adc@49 {
++		compatible = "ti,tla2024";
++		reg = <0x49>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		/* Colibri AIN0 */
++		channel@4 {
++			reg = <4>;
++			ti,datarate = <4>;
++			ti,gain = <1>;
++		};
++
++		/* Colibri AIN1 */
++		channel@5 {
++			reg = <5>;
++			ti,datarate = <4>;
++			ti,gain = <1>;
++		};
++
++		/* Colibri AIN2 */
++		channel@6 {
++			reg = <6>;
++			ti,datarate = <4>;
++			ti,gain = <1>;
++		};
++
++		/* Colibri AIN3 */
++		channel@7 {
++			reg = <7>;
++			ti,datarate = <4>;
++			ti,gain = <1>;
++		};
++	};
++};
+-- 
+2.43.0
+

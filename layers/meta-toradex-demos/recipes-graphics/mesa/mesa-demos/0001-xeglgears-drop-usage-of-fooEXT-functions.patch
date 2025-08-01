@@ -1,0 +1,48 @@
+From 20fe6458f7eb2adedee013c864e54733c9338c1e Mon Sep 17 00:00:00 2001
+From: Max Krummenacher <max.krummenacher@toradex.com>
+Date: Tue, 31 Dec 2019 17:50:28 +0000
+Subject: [PATCH] xeglgears: drop usage of fooEXT functions
+
+With the Vivante implementation they do not exist. Linking thus fails with:
+
+| ...mesa-demos-8.4.0/src/egl/opengl/xeglgears.c:911: undefined reference to `glFramebufferRenderbufferEXT'
+| ...mesa-demos-8.4.0/src/egl/opengl/xeglgears.c:928: undefined reference to `glFramebufferRenderbufferEXT'
+| ...mesa-demos-8.4.0/src/egl/opengl/xeglgears.c:933: undefined reference to `glCheckFramebufferStatusEXT'
+
+Upstream-Status: Pending
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+---
+ src/egl/opengl/xeglgears.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/egl/opengl/xeglgears.c b/src/egl/opengl/xeglgears.c
+index 866b89a..8f7b4c0 100644
+--- a/src/egl/opengl/xeglgears.c
++++ b/src/egl/opengl/xeglgears.c
+@@ -908,7 +908,7 @@ main(int argc, char *argv[])
+       glGenRenderbuffers(1, &color_rb);
+       glBindRenderbuffer(GL_RENDERBUFFER_EXT, color_rb);
+       glRenderbufferStorage(GL_RENDERBUFFER_EXT, GL_RGBA, winWidth, winHeight);
+-      glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT,
++      glFramebufferRenderbuffer(GL_FRAMEBUFFER_EXT,
+ 				   GL_COLOR_ATTACHMENT0_EXT,
+ 				   GL_RENDERBUFFER_EXT,
+ 				   color_rb);
+@@ -925,12 +925,12 @@ main(int argc, char *argv[])
+       glBindRenderbuffer(GL_RENDERBUFFER_EXT, depth_rb);
+       glRenderbufferStorage(GL_RENDERBUFFER_EXT,
+ 			    GL_DEPTH_COMPONENT, winWidth, winHeight);
+-      glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT,
++      glFramebufferRenderbuffer(GL_FRAMEBUFFER_EXT,
+ 				   GL_DEPTH_ATTACHMENT_EXT,
+ 				   GL_RENDERBUFFER_EXT,
+ 				   depth_rb);
+ 
+-      if (glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT) != GL_FRAMEBUFFER_COMPLETE) {
++      if (glCheckFramebufferStatus(GL_FRAMEBUFFER_EXT) != GL_FRAMEBUFFER_COMPLETE) {
+ 	 printf("framebuffer not complete\n");
+ 	 exit(1);
+       }
+-- 
+2.20.1
+

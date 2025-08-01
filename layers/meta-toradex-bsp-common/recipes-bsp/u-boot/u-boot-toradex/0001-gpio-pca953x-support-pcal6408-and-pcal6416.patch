@@ -1,0 +1,34 @@
+From a34542596ed89295c175529e0960137ebf3845b5 Mon Sep 17 00:00:00 2001
+From: Emanuele Ghidoli <emanuele.ghidoli@toradex.com>
+Date: Tue, 11 Feb 2025 22:06:00 +0100
+Subject: [PATCH] gpio: pca953x: support pcal6408 and pcal6416
+
+Add support to NXP GPIO expanders pcal6408, documented at [1], and
+pcal6416, documented at [2].
+
+[1] https://www.nxp.com/docs/en/data-sheet/PCAL6408A.pdf
+[2] https://www.nxp.com/docs/en/data-sheet/PCAL6416A.pdf
+
+Upstream-Status: Backport [5e4031a5f6397542948bdc87f67477d7af6bcff1]
+Signed-off-by: Emanuele Ghidoli <emanuele.ghidoli@toradex.com>
+Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+---
+ drivers/gpio/pca953x_gpio.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/gpio/pca953x_gpio.c b/drivers/gpio/pca953x_gpio.c
+index b0c66d18317e..6954a0df218d 100644
+--- a/drivers/gpio/pca953x_gpio.c
++++ b/drivers/gpio/pca953x_gpio.c
+@@ -395,6 +395,8 @@ static const struct udevice_id pca953x_ids[] = {
+ 	{ .compatible = "nxp,pca9575", .data = OF_957X(16, PCA_INT), },
+ 	{ .compatible = "nxp,pca9698", .data = OF_953X(40, 0), },
+ 
++	{ .compatible = "nxp,pcal6408", .data = OF_953X(8, PCA_LATCH_INT), },
++	{ .compatible = "nxp,pcal6416", .data = OF_953X(16, PCA_LATCH_INT), },
+ 	{ .compatible = "nxp,pcal6524", .data = OF_953X(24, PCA_LATCH_INT), },
+ 
+ 	{ .compatible = "maxim,max7310", .data = OF_953X(8, 0), },
+-- 
+2.44.1
+

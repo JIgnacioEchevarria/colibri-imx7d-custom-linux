@@ -1,0 +1,6 @@
+export is the script used to source the needed environment into the
+running shell. export gets copied to oe-core/ by the repo tool. This
+is also the folder where it needs to be sourced.
+
+if build/conf/local.conf does not exist export copies local.conf
+and bblayers.conf as the initial configuration.

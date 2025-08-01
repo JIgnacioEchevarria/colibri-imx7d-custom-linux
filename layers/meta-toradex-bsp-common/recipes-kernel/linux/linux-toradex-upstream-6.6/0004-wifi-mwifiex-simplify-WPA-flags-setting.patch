@@ -1,0 +1,72 @@
+From dc4a5f94f85a27b186a42bf2872dd631a2a94a37 Mon Sep 17 00:00:00 2001
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Date: Mon, 5 Aug 2024 08:39:13 +0200
+Subject: [PATCH 04/10] wifi: mwifiex: simplify WPA flags setting
+
+The WPA flags setting only depends on the wpa_versions bitfield and not
+on the AKM suite, so move it out of the switch/case to simplify the code
+a bit. Also set bss_config->protocol to zero explicitly. This is done
+only to make the code clearer, bss_config has been zero alloced by the
+caller, so should be zero already. No functional change intended.
+
+Upstream-Status: Backport [eb84567e7208491cd6733cc867d849ab07dabd67]
+Reviewed-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+Acked-by: Brian Norris <briannorris@chromium.org>
+Link: https://lore.kernel.org/r/20240723-mwifiex-wpa-psk-sha256-v3-1-025168a91da1@pengutronix.de
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://patch.msgid.link/20240805-mwifiex-wpa-psk-sha256-v4-1-e1eee80508e6@pengutronix.de
+---
+ .../net/wireless/marvell/mwifiex/uap_cmd.c    | 29 +++++--------------
+ 1 file changed, 8 insertions(+), 21 deletions(-)
+
+diff --git a/drivers/net/wireless/marvell/mwifiex/uap_cmd.c b/drivers/net/wireless/marvell/mwifiex/uap_cmd.c
+index 073c665183b3..51fcae8726ed 100644
+--- a/drivers/net/wireless/marvell/mwifiex/uap_cmd.c
++++ b/drivers/net/wireless/marvell/mwifiex/uap_cmd.c
+@@ -46,34 +46,21 @@ int mwifiex_set_secure_params(struct mwifiex_private *priv,
+ 
+ 	bss_config->key_mgmt_operation |= KEY_MGMT_ON_HOST;
+ 
++	bss_config->protocol = 0;
++	if (params->crypto.wpa_versions & NL80211_WPA_VERSION_1)
++		bss_config->protocol |= PROTOCOL_WPA;
++	if (params->crypto.wpa_versions & NL80211_WPA_VERSION_2)
++		bss_config->protocol |= PROTOCOL_WPA2;
++
+ 	for (i = 0; i < params->crypto.n_akm_suites; i++) {
+ 		switch (params->crypto.akm_suites[i]) {
+ 		case WLAN_AKM_SUITE_8021X:
+-			if (params->crypto.wpa_versions &
+-			    NL80211_WPA_VERSION_1) {
+-				bss_config->protocol = PROTOCOL_WPA;
+-				bss_config->key_mgmt = KEY_MGMT_EAP;
+-			}
+-			if (params->crypto.wpa_versions &
+-			    NL80211_WPA_VERSION_2) {
+-				bss_config->protocol |= PROTOCOL_WPA2;
+-				bss_config->key_mgmt = KEY_MGMT_EAP;
+-			}
++			bss_config->key_mgmt = KEY_MGMT_EAP;
+ 			break;
+ 		case WLAN_AKM_SUITE_PSK:
+-			if (params->crypto.wpa_versions &
+-			    NL80211_WPA_VERSION_1) {
+-				bss_config->protocol = PROTOCOL_WPA;
+-				bss_config->key_mgmt = KEY_MGMT_PSK;
+-			}
+-			if (params->crypto.wpa_versions &
+-			    NL80211_WPA_VERSION_2) {
+-				bss_config->protocol |= PROTOCOL_WPA2;
+-				bss_config->key_mgmt = KEY_MGMT_PSK;
+-			}
++			bss_config->key_mgmt = KEY_MGMT_PSK;
+ 			break;
+ 		case WLAN_AKM_SUITE_SAE:
+-			bss_config->protocol = PROTOCOL_WPA2;
+ 			bss_config->key_mgmt = KEY_MGMT_SAE;
+ 			break;
+ 		default:
+-- 
+2.34.1
+

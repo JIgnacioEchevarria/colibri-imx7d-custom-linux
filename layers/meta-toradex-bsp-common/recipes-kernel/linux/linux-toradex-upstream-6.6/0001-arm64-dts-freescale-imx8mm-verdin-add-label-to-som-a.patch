@@ -1,0 +1,41 @@
+From 577d2d2b98a691b346ff9612e72a33f2681d830d Mon Sep 17 00:00:00 2001
+From: =?utf-8?q?Jo=C3=A3o=20Paulo=20Gon=C3=A7alves?=
+ <joao.goncalves@toradex.com>
+Date: Mon, 17 Jun 2024 13:46:02 -0300
+Subject: [PATCH 1/2] arm64: dts: freescale: imx8mm-verdin: add label to som
+ adc node
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+Add a label to ti-ads1015 node to make it easier to reference it
+from other nodes.
+
+Upstream-Status: Submitted [https://lore.kernel.org/lkml/20240924113048.125761-1-francesco@dolcini.it/]
+Signed-off-by: João Paulo Gonçalves <joao.goncalves@toradex.com>
+Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+---
+ arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
+index 5fa395914191..c20c2da17524 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
+@@ -483,11 +483,12 @@ rtc_i2c: rtc@32 {
+ 		reg = <0x32>;
+ 	};
+ 
+-	adc@49 {
++	verdin_som_adc: adc@49 {
+ 		compatible = "ti,ads1015";
+ 		reg = <0x49>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
++		#io-channel-cells = <1>;
+ 
+ 		/* Verdin I2C_1 (ADC_4 - ADC_3) */
+ 		channel@0 {
+-- 
+2.34.1
+

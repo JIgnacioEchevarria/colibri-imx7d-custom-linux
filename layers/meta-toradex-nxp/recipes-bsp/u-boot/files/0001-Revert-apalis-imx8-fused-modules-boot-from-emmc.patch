@@ -1,0 +1,31 @@
+From 7ade24bca52e1e6517ae9eb6c2820a0c7e881acd Mon Sep 17 00:00:00 2001
+From: Max Krummenacher <max.krummenacher@toradex.com>
+Date: Tue, 28 May 2019 12:56:37 +0200
+Subject: [PATCH] Revert "apalis-imx8: fused modules boot from emmc"
+
+If one wants to build for Apalis iMX8 QM V1.0A one wants to boot the image
+from SD card.
+
+This reverts commit c3d2ea3ea8a0c090cf359f286739f31d681ef71e.
+---
+ include/configs/apalis-imx8.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/configs/apalis-imx8.h b/include/configs/apalis-imx8.h
+index ace5f172bd..f9b254fae0 100644
+--- a/include/configs/apalis-imx8.h
++++ b/include/configs/apalis-imx8.h
+@@ -198,8 +198,8 @@
+ #define CONFIG_SYS_MMC_IMG_LOAD_PART	1
+ 
+ /* On Apalis iMX8 USDHC1 is eMMC, USDHC2 is 8-bit SD and USDHC3 is 4-bit SD */
+-#define CONFIG_SYS_MMC_ENV_DEV		0   /* USDHC1 eMMC */
+-#define CONFIG_MMCROOT			"/dev/mmcblk0p2"  /* USDHC1 eMMC */
++#define CONFIG_SYS_MMC_ENV_DEV		1   /* USDHC1 eMMC */
++#define CONFIG_MMCROOT			"/dev/mmcblk1p2"  /* USDHC1 eMMC */
+ #define CONFIG_SYS_FSL_USDHC_NUM	3
+ 
+ #define CONFIG_SYS_BOOTM_LEN		(64 << 20) /* Increase max gunzip size */
+-- 
+2.13.6
+

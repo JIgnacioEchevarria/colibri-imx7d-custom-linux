@@ -1,0 +1,69 @@
+OpenEmbedded/Yocto BSP Layer for Toradex Modules Based on NXP SoCs
+==================================================================
+
+This layer provides support for ARM based Toradex computer on modules (COM)
+featuring NXP i.MX6, i.MX7, i.MX8, i.MX8X, i.MX8MM, i.MX8MP and i.MX95 for use
+with OpenEmbedded and/or Yocto.
+For more information on available Toradex COMs please visit:
+
+https://www.toradex.com/computer-on-modules
+
+Note that the master branch of the layers is where the development is
+happening. Do expect build breakage and do not expect us to give a solution.
+If you need a more stable base use one of the release branches.
+toradex-bsp-platform may have a master manifest tagged to specific layer
+versions which likely is more stable than using HEAD.
+
+Dependencies
+============
+
+This layer depends on:
+
+  URI: git://git.openembedded.org/bitbake
+  branch: scarthgap
+  revision: HEAD
+
+  URI: git://git.openembedded.org/openembedded-core
+  layer: meta
+  branch: scarthgap
+  revision: HEAD
+
+  URI: git://git.yoctoproject.org/meta-freescale
+  branch: scarthgap
+  revision: HEAD
+
+  URI: https://github.com/Freescale/meta-freescale-3rdparty.git
+  branch: scarthgap
+  revision: HEAD
+
+  URI: git://git.toradex.com/meta-toradex-bsp-common
+  branch: scarthgap-7.x.y
+  revision: HEAD
+
+Patches
+=======
+
+This layer is maintained by Toradex.
+
+When creating a patch of the last commit, use
+
+    git format-patch -s --subject-prefix='meta-toradex-nxp][<branch>][PATCH' -1
+
+To send patches, use
+
+    git send-email --to yocto-patches@toradex.com <generated patch>
+
+
+Building
+========
+
+See the README in meta-toradex-demos.
+
+License
+=======
+
+All metadata is MIT licensed unless otherwise stated. Source code and
+binaries included in tree for individual recipes is under the LICENSE
+stated in each recipe (.bb file) unless otherwise stated.
+
+This README document is Copyright (C) 2016-2020 Toradex AG.

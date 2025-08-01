@@ -1,0 +1,32 @@
+From a48bebc8001a2228d386b08b9e783092cc33321c Mon Sep 17 00:00:00 2001
+From: Francesco Dolcini <francesco.dolcini@toradex.com>
+Date: Wed, 30 Apr 2025 11:41:50 +0200
+Subject: [PATCH 8/8] arm64: dts: freescale: imx8mp-toradex-smarc: use generic
+ gpio node name
+
+Use generic node name for the SoM GPIO expander, following the
+Devicetree Specification generic node names recommendation.
+
+Upstream-Status: Backport [707bf92e4bc2b036d5f4c57cd1025872c9533c7e]
+Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+---
+ arch/arm64/boot/dts/freescale/imx8mp-toradex-smarc.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mp-toradex-smarc.dtsi b/arch/arm64/boot/dts/freescale/imx8mp-toradex-smarc.dtsi
+index 0cd04c3c96bb..22f6daabdb90 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mp-toradex-smarc.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mp-toradex-smarc.dtsi
+@@ -434,7 +434,7 @@ &i2c1 {
+ 	single-master;
+ 	status = "okay";
+ 
+-	som_gpio_expander: gpio-expander@21 {
++	som_gpio_expander: gpio@21 {
+ 		compatible = "nxp,pcal6408";
+ 		reg = <0x21>;
+ 		pinctrl-names = "default";
+-- 
+2.39.5
+

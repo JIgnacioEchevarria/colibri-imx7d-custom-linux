@@ -1,0 +1,64 @@
+OpenEmbedded/Yocto DISTRO Layer for Toradex Modules
+===================================================
+
+This layer provides the distro configuration used to build the demo BSP images
+provided for ARM based Toradex computer on modules (COM).
+
+It follows the poky distro, but does switch to the systemd init system.
+
+For more information on available Toradex COMs please visit:
+
+https://www.toradex.com/computer-on-modules
+
+Note that the master branch of the layers is where the development is
+happening. Do expect build breakage and do not expect us to give a solution.
+If you need a more stable base use one of the release branches.
+toradex-bsp-platform may have a master manifest tagged to specific layer
+versions which likely is more stable than using HEAD.
+
+Dependencies
+============
+
+This layer depends on:
+
+  URI: git://git.openembedded.org/bitbake
+  branch: scarthgap
+  revision: HEAD
+
+  URI: git://git.openembedded.org/openembedded-core
+  layers: meta
+  branch: scarthgap
+  revision: HEAD
+
+  URI: git://git.yoctoproject.org/git/meta-yocto/meta-poky
+  layers: meta-poky
+  branch: scarthgap
+  revision: HEAD
+
+Patches
+=======
+
+This layer is maintained by Toradex.
+
+When creating a patch of the last commit, use
+
+    git format-patch -s --subject-prefix='meta-toradex-distro][<branch>][PATCH' -1
+
+To send patches, use
+
+    git send-email --to yocto-patches@toradex.com <generated patch>
+
+
+Building
+========
+
+See the README in meta-toradex-nxp layer.
+
+License
+=======
+
+All metadata is MIT licensed unless otherwise stated. Source code and
+binaries included in tree for individual recipes is under the LICENSE
+stated in each recipe (.bb file) unless otherwise stated.
+
+This README document is Copyright (C) 2019 Toradex AG.

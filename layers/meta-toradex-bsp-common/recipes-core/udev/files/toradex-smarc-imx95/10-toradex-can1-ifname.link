@@ -1,0 +1,6 @@
+[Match]
+Property=ID_PATH=platform-425b0000.can
+
+[Link]
+AlternativeNamesPolicy=
+AlternativeName=smarc-can1

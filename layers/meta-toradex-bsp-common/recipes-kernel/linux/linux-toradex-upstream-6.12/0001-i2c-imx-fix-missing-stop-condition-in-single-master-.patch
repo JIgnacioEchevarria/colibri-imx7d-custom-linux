@@ -1,0 +1,61 @@
+From 5dc22a624621a753413c748debcbc41b542d241b Mon Sep 17 00:00:00 2001
+From: Stefan Eichenberger <stefan.eichenberger@toradex.com>
+Date: Wed, 11 Dec 2024 08:36:24 +0100
+Subject: [PATCH] i2c: imx: fix missing stop condition in single-master mode
+
+A regression was introduced with the implementation of single-master
+mode, preventing proper stop conditions from being generated. Devices
+that require a valid stop condition, such as EEPROMs, fail to function
+correctly as a result.
+
+The issue only affects devices with the single-master property enabled.
+
+This commit resolves the issue by re-enabling I2C bus busy bit (IBB)
+polling for single-master mode when generating a stop condition. The fix
+further ensures that the i2c_imx->stopped flag is cleared at the start
+of each transfer, allowing the stop condition to be correctly generated
+in i2c_imx_stop().
+
+According to the reference manual (IMX8MMRM, Rev. 2, 09/2019, page
+5270), polling the IBB bit to determine if the bus is free is only
+necessary in multi-master mode. Consequently, the IBB bit is not polled
+for the start condition in single-master mode.
+
+Upstream-Status: Submitted [https://lore.kernel.org/all/20241216151829.74056-1-eichest@gmail.com/]
+Fixes: 6692694aca86 ("i2c: imx: do not poll for bus busy in single master mode")
+Signed-off-by: Stefan Eichenberger <stefan.eichenberger@toradex.com>
+---
+ drivers/i2c/busses/i2c-imx.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/i2c/busses/i2c-imx.c b/drivers/i2c/busses/i2c-imx.c
+index b0031cd32756..ac0e2624f58e 100644
+--- a/drivers/i2c/busses/i2c-imx.c
++++ b/drivers/i2c/busses/i2c-imx.c
+@@ -585,20 +585,18 @@ static int i2c_imx_bus_busy(struct imx_i2c_struct *i2c_imx, int for_busy, bool a
+ {
+ 	unsigned long orig_jiffies = jiffies;
+ 	unsigned int temp;
+-
+-	if (!i2c_imx->multi_master)
+-		return 0;
++	bool multi_master = i2c_imx->multi_master;
+ 
+ 	while (1) {
+ 		temp = imx_i2c_read_reg(i2c_imx, IMX_I2C_I2SR);
+ 
+ 		/* check for arbitration lost */
+-		if (temp & I2SR_IAL) {
++		if (multi_master && (temp & I2SR_IAL)) {
+ 			i2c_imx_clear_irq(i2c_imx, I2SR_IAL);
+ 			return -EAGAIN;
+ 		}
+ 
+-		if (for_busy && (temp & I2SR_IBB)) {
++		if (for_busy && (!multi_master || (temp & I2SR_IBB))) {
+ 			i2c_imx->stopped = 0;
+ 			break;
+ 		}
+-- 
+2.45.2
+

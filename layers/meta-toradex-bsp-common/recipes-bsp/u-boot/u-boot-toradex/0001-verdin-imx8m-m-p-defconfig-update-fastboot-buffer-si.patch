@@ -1,0 +1,53 @@
+From 76a30b1cf8a61e7396b4911441b55f07f0b58a93 Mon Sep 17 00:00:00 2001
+From: Hiago De Franco <hiago.franco@toradex.com>
+Date: Mon, 21 Oct 2024 15:49:28 -0300
+Subject: [PATCH] verdin-imx8m{m|p}: defconfig: update fastboot buffer
+ size/address
+
+Remove FASTBOOT_BUF_SIZE from verdin-imx8mm_defconfig and
+verdin-imx8mp_defconfig to use the default value of 0x7000000, aligning
+with other Toradex boards.
+
+Update FASTBOOT_BUF_ADDR to 0x44200000, consistent with the value in
+previous downstream NXP U-Boot releases. This will make fastboot
+applications continue working with upstream U-Boot by using the same
+address.
+
+Upstream-Status: Submitted [https://lore.kernel.org/u-boot/20241023115350.8413-1-hiagofranco@gmail.com/]
+Signed-off-by: Hiago De Franco <hiago.franco@toradex.com>
+---
+ configs/verdin-imx8mm_defconfig | 3 +--
+ configs/verdin-imx8mp_defconfig | 3 +--
+ 2 files changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/configs/verdin-imx8mm_defconfig b/configs/verdin-imx8mm_defconfig
+index aa4a400c3c60..abb458df4a98 100644
+--- a/configs/verdin-imx8mm_defconfig
++++ b/configs/verdin-imx8mm_defconfig
+@@ -100,8 +100,7 @@ CONFIG_CLK_COMPOSITE_CCF=y
+ CONFIG_SPL_CLK_IMX8MM=y
+ CONFIG_CLK_IMX8MM=y
+ CONFIG_USB_FUNCTION_FASTBOOT=y
+-CONFIG_FASTBOOT_BUF_ADDR=0x42800000
+-CONFIG_FASTBOOT_BUF_SIZE=0x40000000
++CONFIG_FASTBOOT_BUF_ADDR=0x44200000
+ CONFIG_FASTBOOT_FLASH=y
+ CONFIG_FASTBOOT_UUU_SUPPORT=y
+ CONFIG_FASTBOOT_FLASH_MMC_DEV=0
+diff --git a/configs/verdin-imx8mp_defconfig b/configs/verdin-imx8mp_defconfig
+index bf1a0b8badfa..661761f39774 100644
+--- a/configs/verdin-imx8mp_defconfig
++++ b/configs/verdin-imx8mp_defconfig
+@@ -112,8 +112,7 @@ CONFIG_CLK_COMPOSITE_CCF=y
+ CONFIG_CLK_IMX8MP=y
+ CONFIG_FSL_CAAM=y
+ CONFIG_USB_FUNCTION_FASTBOOT=y
+-CONFIG_FASTBOOT_BUF_ADDR=0x42800000
+-CONFIG_FASTBOOT_BUF_SIZE=0x40000000
++CONFIG_FASTBOOT_BUF_ADDR=0x44200000
+ CONFIG_FASTBOOT_FLASH=y
+ CONFIG_FASTBOOT_UUU_SUPPORT=y
+ CONFIG_FASTBOOT_FLASH_MMC_DEV=0
+-- 
+2.39.5
+

@@ -1,0 +1,51 @@
+From 59cd5e50d91e5a28336bb42c1639c9b62c08b467 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jo=C3=A3o=20Paulo=20Gon=C3=A7alves?=
+ <joao.goncalves@toradex.com>
+Date: Tue, 24 Sep 2024 13:40:52 +0200
+Subject: [PATCH 2/7] arm64: dts: freescale: imx8mp-verdin: add labels to som
+ nodes
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Add labels to ti-ads1015 and fec ethernet mdio node to make it easier to
+reference them from other nodes.
+
+Upstream-Status: Backport [59cd5e50d91e5a28336bb42c1639c9b62c08b467]
+Signed-off-by: João Paulo Gonçalves <joao.goncalves@toradex.com>
+Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+---
+ arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi b/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
+index a19ad5ee7f79..e9518b7c7aa8 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
+@@ -320,7 +320,7 @@ &fec {
+ 	pinctrl-0 = <&pinctrl_fec>;
+ 	pinctrl-1 = <&pinctrl_fec_sleep>;
+ 
+-	mdio {
++	verdin_eth2_mdio: mdio {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 
+@@ -591,11 +591,12 @@ hwmon_temp_module: sensor@48 {
+ 		vs-supply = <&reg_vdd_1v8>;
+ 	};
+ 
+-	adc@49 {
++	verdin_som_adc: adc@49 {
+ 		compatible = "ti,ads1015";
+ 		reg = <0x49>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
++		#io-channel-cells = <1>;
+ 
+ 		/* Verdin I2C_1 (ADC_4 - ADC_3) */
+ 		channel@0 {
+-- 
+2.39.5
+

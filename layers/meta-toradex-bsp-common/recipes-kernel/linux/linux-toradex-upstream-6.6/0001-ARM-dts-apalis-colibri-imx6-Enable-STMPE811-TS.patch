@@ -1,0 +1,43 @@
+From c88ee0b912fcc73010be12ca5026f94b34c50577 Mon Sep 17 00:00:00 2001
+From: Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
+Date: Thu, 27 Feb 2025 11:26:32 +0100
+Subject: [PATCH 1/2] ARM: dts: apalis/colibri-imx6: Enable STMPE811 TS
+
+Enable the STMPE811 touchscreen in the SOM dtsi files. The STMPE811 is
+part of the SOM. It's self contained within it, therefore, disabling it
+is not the correct default behavior.
+
+Upstream-Status: Submitted [https://lore.kernel.org/all/20250307101758.27943-2-ernest.vanhoecke@toradex.com/]
+Signed-off-by: Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
+---
+ arch/arm/boot/dts/nxp/imx/imx6qdl-apalis.dtsi  | 1 -
+ arch/arm/boot/dts/nxp/imx/imx6qdl-colibri.dtsi | 1 -
+ 2 files changed, 2 deletions(-)
+
+diff --git a/arch/arm/boot/dts/nxp/imx/imx6qdl-apalis.dtsi b/arch/arm/boot/dts/nxp/imx/imx6qdl-apalis.dtsi
+index dcb4f6a32f80..b36dcdc7144a 100644
+--- a/arch/arm/boot/dts/nxp/imx/imx6qdl-apalis.dtsi
++++ b/arch/arm/boot/dts/nxp/imx/imx6qdl-apalis.dtsi
+@@ -648,7 +648,6 @@ stmpe_ts: stmpe_touchscreen {
+ 			st,settling = <3>;
+ 			/* 5 ms touch detect interrupt delay */
+ 			st,touch-det-delay = <5>;
+-			status = "disabled";
+ 		};
+ 
+ 		stmpe_adc: stmpe_adc {
+diff --git a/arch/arm/boot/dts/nxp/imx/imx6qdl-colibri.dtsi b/arch/arm/boot/dts/nxp/imx/imx6qdl-colibri.dtsi
+index 6cc4d6fd5f28..8f93cd1a0e11 100644
+--- a/arch/arm/boot/dts/nxp/imx/imx6qdl-colibri.dtsi
++++ b/arch/arm/boot/dts/nxp/imx/imx6qdl-colibri.dtsi
+@@ -572,7 +572,6 @@ stmpe_ts: stmpe_touchscreen {
+ 			st,settling = <3>;
+ 			/* 5 ms touch detect interrupt delay */
+ 			st,touch-det-delay = <5>;
+-			status = "disabled";
+ 		};
+ 
+ 		stmpe_adc: stmpe_adc {
+-- 
+2.43.0
+

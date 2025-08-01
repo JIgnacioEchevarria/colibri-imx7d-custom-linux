@@ -1,0 +1,50 @@
+From 3cd7589e7b6f7579e6da7445166e4a529e95fcd9 Mon Sep 17 00:00:00 2001
+From: Francesco Dolcini <francesco.dolcini@toradex.com>
+Date: Thu, 24 Oct 2024 15:56:41 +0200
+Subject: [PATCH] verdin-imx8m[mp]: Increase SD regulator startup delay
+
+The power switch used to power the SD card interface might have
+more than 2ms turn-on time, increase the startup delay to 20ms to
+prevent failures.
+
+There is no need to send this change upstream, upstream U-Boot is
+using OF_UPSTREAM and it will naturally get the patch from the mainline
+kernel after https://lore.kernel.org/all/20241024130651.49718-1-francesco@dolcini.it/
+is merged.
+
+Upstream-Status: Inappropriate [Other]
+Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+---
+ dts/upstream/src/arm64/freescale/imx8mm-verdin.dtsi | 2 +-
+ dts/upstream/src/arm64/freescale/imx8mp-verdin.dtsi | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/dts/upstream/src/arm64/freescale/imx8mm-verdin.dtsi b/dts/upstream/src/arm64/freescale/imx8mm-verdin.dtsi
+index 6f0811587142..a662a68ae2db 100644
+--- a/dts/upstream/src/arm64/freescale/imx8mm-verdin.dtsi
++++ b/dts/upstream/src/arm64/freescale/imx8mm-verdin.dtsi
+@@ -145,7 +145,7 @@
+ 		regulator-max-microvolt = <3300000>;
+ 		regulator-min-microvolt = <3300000>;
+ 		regulator-name = "+V3.3_SD";
+-		startup-delay-us = <2000>;
++		startup-delay-us = <20000>;
+ 	};
+ 
+ 	reserved-memory {
+diff --git a/dts/upstream/src/arm64/freescale/imx8mp-verdin.dtsi b/dts/upstream/src/arm64/freescale/imx8mp-verdin.dtsi
+index c3305f0d4001..9ef050513f26 100644
+--- a/dts/upstream/src/arm64/freescale/imx8mp-verdin.dtsi
++++ b/dts/upstream/src/arm64/freescale/imx8mp-verdin.dtsi
+@@ -151,7 +151,7 @@
+ 		regulator-max-microvolt = <3300000>;
+ 		regulator-min-microvolt = <3300000>;
+ 		regulator-name = "+V3.3_SD";
+-		startup-delay-us = <2000>;
++		startup-delay-us = <20000>;
+ 	};
+ 
+ 	reserved-memory {
+-- 
+2.39.5
+

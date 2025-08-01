@@ -1,0 +1,52 @@
+From 6d58507157d88160310545e2aedd91be311ae1d5 Mon Sep 17 00:00:00 2001
+From: Max Krummenacher <max.krummenacher@toradex.com>
+Date: Tue, 15 Jan 2019 09:30:12 +0000
+Subject: [PATCH] qt3d: do not set resources_big
+
+resources_big enables rcc's two pass mode.
+In an OE setup there seem to be a race condition which makes the build fail with
+the following error messages (with changing build targets):
+
+| No data signature found
+| make[3]: *** [Makefile:458: .rcc/qrc_controls.o] Error 1
+| make[3]: Leaving directory '.../build/examples/qt3d/controls'
+
+see also:
+https://bugreports.qt.io/browse/QTBUG-41301?focusedCommentId=255692&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel
+(the default is now 1 pass and 2 pass needs to be configured in CONFIG with ressource_big)
+
+Upstream-Status: Pending
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+---
+ examples/qt3d/examples.pri                | 2 +-
+ examples/qt3d/planets-qml/planets-qml.pro | 3 ++-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/examples/qt3d/examples.pri b/examples/qt3d/examples.pri
+index 621b1473c..7d9a75073 100644
+--- a/examples/qt3d/examples.pri
++++ b/examples/qt3d/examples.pri
+@@ -1,7 +1,6 @@
+ TEMPLATE = app
+ 
+ QT += 3dextras
+-CONFIG += resources_big
+ 
+ target.path = $$[QT_INSTALL_EXAMPLES]/qt3d/$$TARGET
+ INSTALLS += target
+diff --git a/examples/qt3d/planets-qml/planets-qml.pro b/examples/qt3d/planets-qml/planets-qml.pro
+index de14ecc8a..a66712928 100644
+--- a/examples/qt3d/planets-qml/planets-qml.pro
++++ b/examples/qt3d/planets-qml/planets-qml.pro
+@@ -8,7 +8,7 @@ QT += qml quick \
+     3dquick 3dquickrender 3dquickinput 3dquickextras \
+     network
+ 
+-CONFIG += resources_big c++11
++CONFIG += c++11
+ 
+ HEADERS += \
+     networkcontroller.h
+-- 
+2.13.6
+

@@ -1,0 +1,127 @@
+From a9256e87bc718c96e830edd0f038bc1e36cd706a Mon Sep 17 00:00:00 2001
+From: Stefan Eichenberger <stefan.eichenberger@toradex.com>
+Date: Wed, 2 Oct 2024 16:26:06 +0200
+Subject: [PATCH] PCI: imx6: Add suspend/resume support for i.MX6QDL
+
+The suspend/resume functionality is currently broken on the i.MX6QDL
+platform, as documented in the NXP errata (ERR005723):
+https://www.nxp.com/docs/en/errata/IMX6DQCE.pdf
+
+This patch addresses the issue by sharing most of the suspend/resume
+sequences used by other i.MX devices, while avoiding modifications to
+critical registers that disrupt the PCIe functionality. It targets the
+same problem as the following downstream commit:
+https://github.com/nxp-imx/linux-imx/commit/4e92355e1f79d225ea842511fcfd42b343b32995
+
+Unlike the downstream commit, this patch also resets the connected PCIe
+device if possible. Without this reset, certain drivers, such as ath10k
+or iwlwifi, will crash on resume. The device reset is also done by the
+driver on other i.MX platforms, making this patch consistent with
+existing practices.
+
+Without this patch, suspend/resume will fail on i.MX6QDL devices if a
+PCIe device is connected. Upon resuming, the kernel will hang and
+display an error. Here's an example of the error encountered with the
+ath10k driver:
+ath10k_pci 0000:01:00.0: Unable to change power state from D3hot to D0, device inaccessible
+Unhandled fault: imprecise external abort (0x1406) at 0x0106f944
+
+Upstream-Status: Submitted [https://lore.kernel.org/all/20241030103250.83640-1-eichest@gmail.com/]
+Signed-off-by: Stefan Eichenberger <stefan.eichenberger@toradex.com>
+---
+ drivers/pci/controller/dwc/pci-imx6.c | 57 +++++++++++++++++++++------
+ 1 file changed, 46 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
+index 86b09b5d7f24..68206fb1c26b 100644
+--- a/drivers/pci/controller/dwc/pci-imx6.c
++++ b/drivers/pci/controller/dwc/pci-imx6.c
+@@ -60,6 +60,11 @@ enum imx6_pcie_variants {
+ #define IMX6_PCIE_FLAG_IMX6_PHY			BIT(0)
+ #define IMX6_PCIE_FLAG_IMX6_SPEED_CHANGE	BIT(1)
+ #define IMX6_PCIE_FLAG_SUPPORTS_SUSPEND		BIT(2)
++/*
++ * Because of ERR005723 (PCIe does not support L2 power down) we need to
++ * workaround suspend resume on some devices which are affected by this errata.
++ */
++#define IMX6_PCIE_FLAG_BROKEN_SUSPEND		BIT(3)
+ 
+ struct imx6_pcie_drvdata {
+ 	enum imx6_pcie_variants variant;
+@@ -1210,9 +1215,19 @@ static int imx6_pcie_suspend_noirq(struct device *dev)
+ 		return 0;
+ 
+ 	imx6_pcie_msi_save_restore(imx6_pcie, true);
+-	imx6_pcie_pm_turnoff(imx6_pcie);
+-	imx6_pcie_stop_link(imx6_pcie->pci);
+-	imx6_pcie_host_exit(pp);
++	if (imx6_pcie->drvdata->flags & IMX6_PCIE_FLAG_BROKEN_SUSPEND) {
++		/*
++		 * The minimum for a workaround would be to set PERST# and to
++		 * set the PCIE_TEST_PD flag. However, we can also disable the
++		 * clock which saves some power.
++		 */
++		imx6_pcie_assert_core_reset(imx6_pcie);
++		imx6_pcie_disable_ref_clk(imx6_pcie);
++	} else {
++		imx6_pcie_pm_turnoff(imx6_pcie);
++		imx6_pcie_stop_link(imx6_pcie->pci);
++		imx6_pcie_host_exit(pp);
++	}
+ 
+ 	return 0;
+ }
+@@ -1226,14 +1241,32 @@ static int imx6_pcie_resume_noirq(struct device *dev)
+ 	if (!(imx6_pcie->drvdata->flags & IMX6_PCIE_FLAG_SUPPORTS_SUSPEND))
+ 		return 0;
+ 
+-	ret = imx6_pcie_host_init(pp);
+-	if (ret)
+-		return ret;
+-	imx6_pcie_msi_save_restore(imx6_pcie, false);
+-	dw_pcie_setup_rc(pp);
++	if (imx6_pcie->drvdata->flags & IMX6_PCIE_FLAG_BROKEN_SUSPEND) {
++		ret = imx6_pcie_enable_ref_clk(imx6_pcie);
++		if (ret)
++			return ret;
++		ret = imx6_pcie_deassert_core_reset(imx6_pcie);
++		if (ret)
++			return ret;
++		/*
++		 * Using PCIE_TEST_PD seems to disable MSI and powers down the
++		 * root complex. This is why we have to setup the rc again and
++		 * why we have to restore the MSI register.
++		 */
++		ret = dw_pcie_setup_rc(&imx6_pcie->pci->pp);
++		if (ret)
++			return ret;
++		imx6_pcie_msi_save_restore(imx6_pcie, false);
++	} else {
++		ret = imx6_pcie_host_init(pp);
++		if (ret)
++			return ret;
++		imx6_pcie_msi_save_restore(imx6_pcie, false);
++		dw_pcie_setup_rc(pp);
+ 
+-	if (imx6_pcie->link_is_up)
+-		imx6_pcie_start_link(imx6_pcie->pci);
++		if (imx6_pcie->link_is_up)
++			imx6_pcie_start_link(imx6_pcie->pci);
++	}
+ 
+ 	return 0;
+ }
+@@ -1475,7 +1508,9 @@ static const struct imx6_pcie_drvdata drvdata[] = {
+ 	[IMX6Q] = {
+ 		.variant = IMX6Q,
+ 		.flags = IMX6_PCIE_FLAG_IMX6_PHY |
+-			 IMX6_PCIE_FLAG_IMX6_SPEED_CHANGE,
++			 IMX6_PCIE_FLAG_IMX6_SPEED_CHANGE |
++			 IMX6_PCIE_FLAG_BROKEN_SUSPEND |
++			 IMX6_PCIE_FLAG_SUPPORTS_SUSPEND,
+ 		.dbi_length = 0x200,
+ 		.gpr = "fsl,imx6q-iomuxc-gpr",
+ 	},
+-- 
+2.43.0
+

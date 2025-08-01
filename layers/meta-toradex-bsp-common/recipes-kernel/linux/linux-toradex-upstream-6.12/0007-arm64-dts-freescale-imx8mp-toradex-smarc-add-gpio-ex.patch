@@ -1,0 +1,63 @@
+From 306cbce1258cc26b79ab11cf33c418a10603f203 Mon Sep 17 00:00:00 2001
+From: Emanuele Ghidoli <emanuele.ghidoli@toradex.com>
+Date: Wed, 30 Apr 2025 11:41:49 +0200
+Subject: [PATCH 7/8] arm64: dts: freescale: imx8mp-toradex-smarc: add gpio
+ expander
+
+Add gpio expander node to the device tree and the related nodes.
+
+Upstream-Status: Backport [8161827fb80c7f6f6ac8abffedcfdd3a42e13d2b]
+Reviewed-by: Peng Fan <peng.fan@nxp.com>
+Signed-off-by: Emanuele Ghidoli <emanuele.ghidoli@toradex.com>
+Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+---
+ .../dts/freescale/imx8mp-toradex-smarc.dtsi   | 25 +++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mp-toradex-smarc.dtsi b/arch/arm64/boot/dts/freescale/imx8mp-toradex-smarc.dtsi
+index c4ca01ce60d0..0cd04c3c96bb 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mp-toradex-smarc.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mp-toradex-smarc.dtsi
+@@ -54,6 +54,13 @@ smarc_key_sleep: key-sleep {
+ 			wakeup-source;
+ 			linux,code = <KEY_SLEEP>;
+ 		};
++
++		smarc_switch_lid: switch-lid {
++			gpios = <&som_ec_gpio_expander 2 GPIO_ACTIVE_LOW>;
++			label = "SMARC_LID#";
++			linux,code = <SW_LID>;
++			linux,input-type = <EV_SW>;
++		};
+ 	};
+ 
+ 	reg_usb0_vbus: regulator-usb0-vbus {
+@@ -539,6 +546,24 @@ embedded-controller@28 {
+ 		reg = <0x28>;
+ 	};
+ 
++	som_ec_gpio_expander: gpio@29 {
++		compatible = "toradex,ecgpiol16", "nxp,pcal6416";
++		reg = <0x29>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_mcu_int>;
++		#interrupt-cells = <2>;
++		interrupt-controller;
++		interrupt-parent = <&gpio3>;
++		interrupts = <8 IRQ_TYPE_LEVEL_LOW>;
++		#gpio-cells = <2>;
++		gpio-controller;
++		gpio-line-names =
++			"SMARC_CHARGER_PRSNT#",
++			"SMARC_CHARGING#",
++			"SMARC_LID#",
++			"SMARC_BATLOW#";
++	};
++
+ 	rtc_i2c: rtc@32 {
+ 		compatible = "epson,rx8130";
+ 		reg = <0x32>;
+-- 
+2.39.5
+

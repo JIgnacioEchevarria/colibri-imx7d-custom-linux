@@ -1,0 +1,70 @@
+From 3d1799672a8ce636ed0b5b5cfe3e571b16168c9f Mon Sep 17 00:00:00 2001
+From: Stefan Eichenberger <stefan.eichenberger@toradex.com>
+Date: Fri, 5 Jul 2024 14:36:54 +0200
+Subject: [PATCH 1/5] i2c: imx: do not poll for bus busy in single master mode
+
+According to the i.MX8M Mini reference manual chapter "16.1.4.2
+Generation of Start" it is only necessary to poll for bus busy and
+arbitration lost in multi master mode. This helps to avoid rescheduling
+while the i2c bus is busy and avoids SMBus devices to timeout. For
+backward compatibility, the single-master property needs to be
+explicitly set to disable the bus busy polling.
+
+Upstream-Status: Submitted [https://lore.kernel.org/linux-i2c/20241014131635.205489-1-eichest@gmail.com]
+Signed-off-by: Stefan Eichenberger <stefan.eichenberger@toradex.com>
+Reviewed-by: Frank Li <Frank.Li@nxp.com>
+Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ drivers/i2c/busses/i2c-imx.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/i2c/busses/i2c-imx.c b/drivers/i2c/busses/i2c-imx.c
+index 3842e527116b7..711fd555dd1de 100644
+--- a/drivers/i2c/busses/i2c-imx.c
++++ b/drivers/i2c/busses/i2c-imx.c
+@@ -216,6 +216,8 @@ struct imx_i2c_struct {
+ 	struct i2c_client	*slave;
+ 	enum i2c_slave_event last_slave_event;
+ 
++	bool			multi_master;
++
+ 	/* For checking slave events. */
+ 	spinlock_t     slave_lock;
+ 	struct hrtimer slave_timer;
+@@ -481,6 +483,9 @@ static int i2c_imx_bus_busy(struct imx_i2c_struct *i2c_imx, int for_busy, bool a
+ 	unsigned long orig_jiffies = jiffies;
+ 	unsigned int temp;
+ 
++	if (!i2c_imx->multi_master)
++		return 0;
++
+ 	while (1) {
+ 		temp = imx_i2c_read_reg(i2c_imx, IMX_I2C_I2SR);
+ 
+@@ -540,8 +545,8 @@ static int i2c_imx_trx_complete(struct imx_i2c_struct *i2c_imx, bool atomic)
+ 		return -ETIMEDOUT;
+ 	}
+ 
+-	/* check for arbitration lost */
+-	if (i2c_imx->i2csr & I2SR_IAL) {
++	/* In multi-master mode check for arbitration lost */
++	if (i2c_imx->multi_master && (i2c_imx->i2csr & I2SR_IAL)) {
+ 		dev_dbg(&i2c_imx->adapter.dev, "<%s> Arbitration lost\n", __func__);
+ 		i2c_imx_clear_irq(i2c_imx, I2SR_IAL);
+ 
+@@ -1468,6 +1473,12 @@ static int i2c_imx_probe(struct platform_device *pdev)
+ 		goto rpm_disable;
+ 	}
+ 
++	/*
++	 * We use the single-master property for backward compatibility.
++	 * By default multi master mode is enabled.
++	 */
++	i2c_imx->multi_master = !of_property_read_bool(pdev->dev.of_node, "single-master");
++
+ 	/* Set up clock divider */
+ 	i2c_imx->bitrate = I2C_MAX_STANDARD_MODE_FREQ;
+ 	ret = of_property_read_u32(pdev->dev.of_node,
+-- 
+2.43.0
+

@@ -1,0 +1,51 @@
+From 44c15abda24e7390c0c45222b0422bab2b7d5d09 Mon Sep 17 00:00:00 2001
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Date: Mon, 5 Aug 2024 08:39:15 +0200
+Subject: [PATCH 06/10] wifi: mwifiex: add support for WPA-PSK-SHA256
+
+This adds support for the WPA-PSK AKM suite with SHA256 as hashing
+method (WPA-PSK-SHA256). Tested with a wpa_supplicant provided AP
+using key_mgmt=WPA-PSK-SHA256.
+
+Upstream-Status: Backport [ca0107c3aa304a50899baadf324bdb3f9db3a87e]
+Reviewed-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+Link: https://lore.kernel.org/r/20240717-mwifiex-wpa-psk-sha256-v2-2-eb53d5082b62@pengutronix.de
+Acked-by: Brian Norris <briannorris@chromium.org>
+Link: https://lore.kernel.org/r/20240723-mwifiex-wpa-psk-sha256-v3-3-025168a91da1@pengutronix.de
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://patch.msgid.link/20240805-mwifiex-wpa-psk-sha256-v4-3-e1eee80508e6@pengutronix.de
+---
+ drivers/net/wireless/marvell/mwifiex/fw.h      | 1 +
+ drivers/net/wireless/marvell/mwifiex/uap_cmd.c | 3 +++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/drivers/net/wireless/marvell/mwifiex/fw.h b/drivers/net/wireless/marvell/mwifiex/fw.h
+index 8bc073c3bd6a..973a755d9643 100644
+--- a/drivers/net/wireless/marvell/mwifiex/fw.h
++++ b/drivers/net/wireless/marvell/mwifiex/fw.h
+@@ -419,6 +419,7 @@ enum MWIFIEX_802_11_PRIVACY_FILTER {
+ #define KEY_MGMT_NONE               0x04
+ #define KEY_MGMT_PSK                0x02
+ #define KEY_MGMT_EAP                0x01
++#define KEY_MGMT_PSK_SHA256         0x100
+ #define KEY_MGMT_SAE                0x400
+ #define CIPHER_TKIP                 0x04
+ #define CIPHER_AES_CCMP             0x08
+diff --git a/drivers/net/wireless/marvell/mwifiex/uap_cmd.c b/drivers/net/wireless/marvell/mwifiex/uap_cmd.c
+index 7214b6cf304a..1c0ceac6b27f 100644
+--- a/drivers/net/wireless/marvell/mwifiex/uap_cmd.c
++++ b/drivers/net/wireless/marvell/mwifiex/uap_cmd.c
+@@ -61,6 +61,9 @@ int mwifiex_set_secure_params(struct mwifiex_private *priv,
+ 		case WLAN_AKM_SUITE_PSK:
+ 			bss_config->key_mgmt |= KEY_MGMT_PSK;
+ 			break;
++		case WLAN_AKM_SUITE_PSK_SHA256:
++			bss_config->key_mgmt |= KEY_MGMT_PSK_SHA256;
++			break;
+ 		case WLAN_AKM_SUITE_SAE:
+ 			bss_config->key_mgmt |= KEY_MGMT_SAE;
+ 			break;
+-- 
+2.34.1
+

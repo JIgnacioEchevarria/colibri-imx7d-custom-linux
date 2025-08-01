@@ -1,0 +1,104 @@
+#!/usr/bin/env python3
+#
+# Tool to update Toradex recipes using AUTOREV
+#
+# Copyright (c) 2020, Toradex
+#
+# SPDX-License-Identifier: GPL-2.0-only
+#
+
+import os
+import sys
+import argparse
+import logging
+import subprocess
+script_path = os.path.dirname(os.path.realpath(__file__))
+lib_path = os.path.join(script_path, '../../openembedded-core/scripts/lib')
+sys.path = sys.path + [lib_path]
+import argparse_oe
+import scriptutils
+
+logger = scriptutils.logger_create('uprev-srcrev')
+
+recipes_tdxref = [
+    "../layers/meta-toradex-bsp-common/recipes-kernel/linux/linux-toradex-upstream_6.12.bb",
+    "../layers/meta-toradex-bsp-common/recipes-kernel/linux/linux-toradex-upstream_6.6.bb",
+    "../layers/meta-toradex-bsp-common/recipes-kernel/linux/linux-toradex-upstream-rt_6.6.bb",
+    "../layers/meta-toradex-bsp-common/recipes-kernel/linux/device-tree-overlays-mainline_git.bb",
+    "../layers/meta-toradex-nxp/recipes-kernel/linux/linux-toradex_6.6-2.2.x.bb",
+    "../layers/meta-toradex-nxp/recipes-kernel/linux/device-tree-overlays_git.bb",
+    "../layers/meta-toradex-nxp/recipes-bsp/imx-sc-firmware/imx-sc-firmware-toradex_1.17.0.bb",
+    "../layers/meta-toradex-nxp/recipes-bsp/u-boot/u-boot-toradex_2024.04.bb",
+    "../layers/meta-toradex-nxp/recipes-bsp/imx-oei/imx-oei-toradex_1.0.0.bb",
+    "../layers/meta-toradex-nxp/recipes-bsp/imx-system-manager/imx-sm-toradex_1.0.0.bb",
+    "../layers/meta-toradex-ti/recipes-bsp/u-boot/u-boot-toradex-ti_2024.04.bb",
+    "../layers/meta-toradex-ti/recipes-kernel/linux/device-tree-overlays-ti_git.bb",
+    "../layers/meta-toradex-ti/recipes-kernel/linux/linux-toradex-ti_6.6.bb",
+    ]
+
+recipes_tezi = [
+    "../layers/meta-toradex-tezi/recipes-tezi/qt-tezi/qt-tezi_git.bb",
+    "../layers/meta-toradex-tezi/recipes-tezi/qt-tezi/qt-tezictl_git.bb",
+    ]
+
+recipes_torizon = [
+    "../layers/meta-toradex-torizon/recipes-kernel/linux/linux-toradex-kmeta.inc",
+    ]
+
+def uprev_recipe(args, env, recipe):
+
+    try:
+        result = subprocess.run(
+                'recipetool updatesrcrev {}'.format(recipe),
+                stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                env=env, universal_newlines=True,
+                shell=True)
+        if not args.quiet:
+            print(result.stdout)
+        return result.returncode
+    except subprocess.CalledProcessError as e:
+        logger.error('ERROR: recipetool failed:\n%s' % e.output.decode('utf-8'))
+        return e.returncode
+ 
+
+def uprev(args):
+    env = os.environ.copy()
+    # make sure that we query the remote repo as we execute the script, not
+    # the clone we have in the local download.
+    env['BB_SRCREV_POLICY'] = "clear"
+
+    # decide if we build torizon or tdxref. Use the existence of meta-toradex-torizon
+    recipes = recipes_tdxref
+    if os.path.exists(os.path.join(script_path, '../../meta-toradex-torizon')):
+        recipes = recipes + recipes_torizon
+    elif os.path.exists(os.path.join(script_path, '../../meta-toradex-tezi')):
+        recipes = recipes + recipes_tezi
+
+    for recipe in recipes:
+        logger.info('Processing recipe {}'.format(recipe))
+        res = uprev_recipe(args, env, recipe)
+        if (res != os.EX_OK):
+            return res
+    return os.EX_OK
+
+def main():
+    parser = argparse_oe.ArgumentParser(description='SRCREV uprev tool.')
+
+    parser.add_argument('-d', '--debug', help='enable debug output', action='store_true')
+    parser.add_argument('-q', '--quiet', help='print only errors', action='store_true')
+
+    parser.set_defaults(func=uprev)
+
+    args = parser.parse_args()
+
+    if args.debug:
+        logger.setLevel(logging.DEBUG)
+    elif args.quiet:
+        logger.setLevel(logging.ERROR)
+
+    ret = args.func(args)
+
+    return ret
+
+if __name__ == "__main__":
+    sys.exit(main())

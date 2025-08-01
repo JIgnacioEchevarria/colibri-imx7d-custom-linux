@@ -1,0 +1,50 @@
+From 5592840a949ff3768337d9679fff9a21d9b3ffc4 Mon Sep 17 00:00:00 2001
+From: Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
+Date: Thu, 27 Feb 2025 11:05:01 +0100
+Subject: [PATCH 2/2] toradex: apalis/colibri imx6: Select correct DTB for SoM
+ v1.2+
+
+When "fdtfile" is not set, use the "variant" environment variable to
+select the correct DTB.
+
+Apalis/Colibri iMX6 V1.2 replaced the STMPE811 ADC/Touch controller
+which is EOL with the TLA2024 ADC and AD7879 touch controller. They thus
+require a different DTB, which we can easily select with the variant env
+variable.
+
+Upstream-Status: Submitted [https://lore.kernel.org/u-boot/20250307103454.32661-3-ernest.vanhoecke@toradex.com/]
+Signed-off-by: Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
+---
+ configs/apalis_imx6_defconfig  | 2 +-
+ configs/colibri_imx6_defconfig | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/configs/apalis_imx6_defconfig b/configs/apalis_imx6_defconfig
+index e8dc60c6ce18..7237e3623140 100644
+--- a/configs/apalis_imx6_defconfig
++++ b/configs/apalis_imx6_defconfig
+@@ -33,7 +33,7 @@ CONFIG_DISTRO_DEFAULTS=y
+ CONFIG_BOOTDELAY=1
+ CONFIG_BOOTCOMMAND="run distro_bootcmd; usb start; setenv stdout serial,vidconsole; setenv stdin serial,usbkbd"
+ CONFIG_USE_PREBOOT=y
+-CONFIG_PREBOOT="test -n ${fdtfile} || setenv fdtfile imx6q-apalis-${fdt_board}.dtb"
++CONFIG_PREBOOT="test -n ${fdtfile} || setenv fdtfile imx6q-apalis${variant}-${fdt_board}.dtb"
+ CONFIG_SYS_CBSIZE=1024
+ CONFIG_SYS_PBSIZE=1055
+ CONFIG_SYS_CONSOLE_OVERWRITE_ROUTINE=y
+diff --git a/configs/colibri_imx6_defconfig b/configs/colibri_imx6_defconfig
+index 8203b7edcf9c..fc852f09f79a 100644
+--- a/configs/colibri_imx6_defconfig
++++ b/configs/colibri_imx6_defconfig
+@@ -32,7 +32,7 @@ CONFIG_DISTRO_DEFAULTS=y
+ CONFIG_BOOTDELAY=1
+ CONFIG_BOOTCOMMAND="run distro_bootcmd; usb start; setenv stdout serial,vidconsole; setenv stdin serial,usbkbd"
+ CONFIG_USE_PREBOOT=y
+-CONFIG_PREBOOT="test -n ${fdtfile} || setenv fdtfile imx6dl-colibri-${fdt_board}.dtb"
++CONFIG_PREBOOT="test -n ${fdtfile} || setenv fdtfile imx6dl-colibri${variant}-${fdt_board}.dtb"
+ CONFIG_SYS_CBSIZE=1024
+ CONFIG_SYS_PBSIZE=1056
+ CONFIG_SYS_CONSOLE_OVERWRITE_ROUTINE=y
+-- 
+2.43.0
+

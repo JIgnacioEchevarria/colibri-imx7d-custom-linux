@@ -1,0 +1,161 @@
+From 3d1f1ea8eb5e24ba21efba2cf9f52d9c901dfe82 Mon Sep 17 00:00:00 2001
+From: Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
+Date: Mon, 24 Feb 2025 18:12:07 +0100
+Subject: [PATCH 1/2] board: toradex: apalis/colibri imx6: Detect new v1.2 SoM
+ variant
+
+Apalis/Colibri iMX6 V1.2 will replace the STMPE811 ADC/Touch controller
+which is EOL by the TLA2024 ADC and AD7879 touch controller.
+
+To support this new version, we detect the presence of the TLA2024
+during boot and set a new environment variable named "variant". This
+will allow us and users to select the correct DT easily.
+
+By probing via I2C we have a robust detection method instead of relying
+on the existing "board_rev" environment variable which is set by the
+config block. Users can use "variant" in their DT selection and do not
+have to map the board revision to a device tree.
+
+"variant" environment variable behaviour:
+* Empty or absent for all versions below v1.2 (STMPE811)
+* "-v1.2" for all versions starting from v1.2 (TLA2024 + AD7879)
+
+Usage example:
+setenv fdtfile imx6q-apalis${variant}-${fdt_board}.dtb
+
+Upstream-Status: Submitted [https://lore.kernel.org/u-boot/20250307103454.32661-2-ernest.vanhoecke@toradex.com/]
+Signed-off-by: Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
+---
+ board/toradex/apalis_imx6/apalis_imx6.c   | 31 +++++++++++++++++++++++
+ board/toradex/colibri_imx6/colibri_imx6.c | 31 +++++++++++++++++++++++
+ 2 files changed, 62 insertions(+)
+
+diff --git a/board/toradex/apalis_imx6/apalis_imx6.c b/board/toradex/apalis_imx6/apalis_imx6.c
+index 0da245374a0d..21cd866a3d2e 100644
+--- a/board/toradex/apalis_imx6/apalis_imx6.c
++++ b/board/toradex/apalis_imx6/apalis_imx6.c
+@@ -36,6 +36,7 @@
+ #include <dwc_ahsata.h>
+ #include <env.h>
+ #include <fsl_esdhc_imx.h>
++#include <i2c.h>
+ #include <imx_thermal.h>
+ #include <micrel.h>
+ #include <miiphy.h>
+@@ -77,6 +78,8 @@ DECLARE_GLOBAL_DATA_PTR;
+ 
+ #define APALIS_IMX6_SATA_INIT_RETRIES	10
+ 
++#define I2C_PWR	1
++
+ int dram_init(void)
+ {
+ 	/* use the DDR controllers configured size */
+@@ -689,6 +692,32 @@ int board_init(void)
+ 	return 0;
+ }
+ 
++static bool is_som_variant_1_2(void)
++{
++	struct udevice *bus;
++	struct udevice *i2c_dev;
++	int ret;
++
++	ret = uclass_get_device_by_seq(UCLASS_I2C, I2C_PWR, &bus);
++	if (ret) {
++		printf("Failed to get I2C_PWR\n");
++		return false;
++	}
++
++	/* V1.2 uses the TLA2024 at 0x49 instead of the STMPE811 at 0x41 */
++	ret = dm_i2c_probe(bus, 0x49, 0, &i2c_dev);
++
++	return (bool)!ret;
++}
++
++static void select_dt_from_module_version(void)
++{
++	if (is_som_variant_1_2())
++		env_set("variant", "-v1.2");
++	else
++		env_set("variant", "");
++}
++
+ #ifdef CONFIG_BOARD_LATE_INIT
+ int board_late_init(void)
+ {
+@@ -696,6 +725,8 @@ int board_late_init(void)
+ 	char env_str[256];
+ 	u32 rev;
+ 
++	select_dt_from_module_version();
++
+ 	rev = get_board_revision();
+ 	snprintf(env_str, ARRAY_SIZE(env_str), "%.4x", rev);
+ 	env_set("board_rev", env_str);
+diff --git a/board/toradex/colibri_imx6/colibri_imx6.c b/board/toradex/colibri_imx6/colibri_imx6.c
+index ce19a9c79752..255bdcb421e6 100644
+--- a/board/toradex/colibri_imx6/colibri_imx6.c
++++ b/board/toradex/colibri_imx6/colibri_imx6.c
+@@ -33,6 +33,7 @@
+ #include <cpu.h>
+ #include <dm/platform_data/serial_mxc.h>
+ #include <fsl_esdhc_imx.h>
++#include <i2c.h>
+ #include <imx_thermal.h>
+ #include <miiphy.h>
+ #include <netdev.h>
+@@ -71,6 +72,8 @@ DECLARE_GLOBAL_DATA_PTR;
+ 
+ #define OUTPUT_RGB (PAD_CTL_SPEED_MED|PAD_CTL_DSE_60ohm|PAD_CTL_SRE_FAST)
+ 
++#define I2C_PWR	1
++
+ int dram_init(void)
+ {
+ 	/* use the DDR controllers configured size */
+@@ -609,6 +612,32 @@ int board_init(void)
+ 	return 0;
+ }
+ 
++static bool is_som_variant_1_2(void)
++{
++	struct udevice *bus;
++	struct udevice *i2c_dev;
++	int ret;
++
++	ret = uclass_get_device_by_seq(UCLASS_I2C, I2C_PWR, &bus);
++	if (ret) {
++		printf("Failed to get I2C_PWR\n");
++		return false;
++	}
++
++	/* V1.2 uses the TLA2024 at 0x49 instead of the STMPE811 at 0x41 */
++	ret = dm_i2c_probe(bus, 0x49, 0, &i2c_dev);
++
++	return (bool)!ret;
++}
++
++static void select_dt_from_module_version(void)
++{
++	if (is_som_variant_1_2())
++		env_set("variant", "-v1.2");
++	else
++		env_set("variant", "");
++}
++
+ #ifdef CONFIG_BOARD_LATE_INIT
+ int board_late_init(void)
+ {
+@@ -616,6 +645,8 @@ int board_late_init(void)
+ 	char env_str[256];
+ 	u32 rev;
+ 
++	select_dt_from_module_version();
++
+ 	rev = get_board_revision();
+ 	snprintf(env_str, ARRAY_SIZE(env_str), "%.4x", rev);
+ 	env_set("board_rev", env_str);
+-- 
+2.43.0
+

@@ -1,0 +1,40 @@
+From 25b5950b7460a478cfd838780005cbc1771bb5f1 Mon Sep 17 00:00:00 2001
+From: Vitor Soares <vitor.soares@toradex.com>
+Date: Mon, 14 Apr 2025 13:38:26 +0100
+Subject: [PATCH 1/8] dt-bindings: arm: fsl: add Toradex SMARC iMX8MP SoM and
+ carrier
+
+Add DT compatible strings for Toradex SMARC iMX8MP SoM and
+Toradex SMARC Development carrier board.
+
+Upstream-Status: Backport [762807d39037fa601f7919d7fedd39e3e7f7d501]
+Link: https://www.toradex.com/computer-on-modules/smarc-arm-family/nxp-imx-8m-plus
+Link: https://www.toradex.com/products/carrier-board/smarc-development-board-kit
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+Signed-off-by: Vitor Soares <vitor.soares@toradex.com>
+Reviewed-by: Daniel Baluta <daniel.baluta@nxp.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+---
+ Documentation/devicetree/bindings/arm/fsl.yaml | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
+index 7413759ed240..008b4efd3ab4 100644
+--- a/Documentation/devicetree/bindings/arm/fsl.yaml
++++ b/Documentation/devicetree/bindings/arm/fsl.yaml
+@@ -1132,6 +1132,12 @@ properties:
+           - const: polyhex,imx8mp-debix-som-a       # Polyhex Debix SOM A
+           - const: fsl,imx8mp
+ 
++      - description: Toradex Boards with SMARC iMX8M Plus Modules
++        items:
++          - const: toradex,smarc-imx8mp-dev # Toradex SMARC iMX8M Plus on Toradex SMARC Development Board
++          - const: toradex,smarc-imx8mp     # Toradex SMARC iMX8M Plus Module
++          - const: fsl,imx8mp
++
+       - description: Toradex Boards with Verdin iMX8M Plus Modules
+         items:
+           - enum:
+-- 
+2.39.5
+

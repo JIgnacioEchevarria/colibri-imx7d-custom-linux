@@ -1,0 +1,30 @@
+From f064b60df5ebf11a0d3e0ed632a6b989690773f6 Mon Sep 17 00:00:00 2001
+From: Max Krummenacher <max.krummenacher@toradex.com>
+Date: Mon, 21 Feb 2022 22:32:54 +0100
+Subject: [PATCH] pkgconfig: don't include ldflags
+
+This leaks the cross build environment.
+Prevents:
+| ERROR: giblib-1.2.4-r0 do_populate_sysroot: QA Issue: giblib.pc failed sanity test (tmpdir) in path ../giblib/1.2.4-r0/sysroot-destdir/usr/lib/ pkgconfig [pkgconfig]
+
+Upstream-Status: Pending
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+---
+ giblib.pc.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/giblib.pc.in b/giblib.pc.in
+index df520ae..3049603 100644
+--- a/giblib.pc.in
++++ b/giblib.pc.in
+@@ -6,6 +6,6 @@ includedir=@includedir@
+ Name: giblib
+ Description: wrapper library for imlib2, and other stuff
+ Version: @VERSION@
+-Libs: -L${libdir} -lgiblib @LDFLAGS@ @IMLIB_LIBS@
++Libs: -L${libdir} -lgiblib @IMLIB_LIBS@
+ Cflags: -I${includedir} -I${includedir}/giblib @IMLIB_CFLAGS@
+ 
+-- 
+2.20.1
+

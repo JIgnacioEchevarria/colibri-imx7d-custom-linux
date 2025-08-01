@@ -1,0 +1,44 @@
+Upstream-Status: Pending
+--- a/main.cpp	2022-11-16 15:25:11.221100107 +0100
++++ b/main.cpp	2022-11-18 09:30:01.084064039 +0100
+@@ -1,5 +1,22 @@
+ #include <QGuiApplication>
+ #include <QQuickView>
++#include <QScreen>
++
++void setFullscreen(QQuickView *view, const QScreen *screen)
++{
++    QSize screenSize = screen->size();
++    /* If we set fullscreen and screen size is 0,0 the application crashes.
++     * Therefore, we only set fullscreen mode when the screen size is big enough.
++     * We have to set visible false before we change the window state, else it
++     * won't update correctly and we might have a title bar */
++    if ((screenSize.height() > 1) && (screenSize.width() > 1)) {
++        view->setVisible(false);
++        view->setWindowStates(Qt::WindowFullScreen);
++    }
++
++    /* We always need to set visible to true, else the window will not show up */
++    view->setVisible(true);
++}
+ 
+ int main(int argc, char* argv[])
+ {
+@@ -10,9 +27,15 @@
+ 
+     const QString lowerArgument = QString::fromLatin1(argv[1]).toLower();
+     if (lowerArgument == QLatin1String("--fullscreen")) {
+-        view.showFullScreen();
+-    } else {
++        QObject::connect(&view, &QQuickView::screenChanged, &app, [&view](QScreen *screen) {
++                setFullscreen(&view, screen);
++        }, Qt::DirectConnection);
++
++        setFullscreen(&view, view.screen());
++    }
++    else {
+         view.show();
+     }
++
+     return app.exec();
+ }

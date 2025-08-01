@@ -1,0 +1,60 @@
+From 7832a091d768a005020a37c2568f76ae4147b809 Mon Sep 17 00:00:00 2001
+From: Adam Ford <aford173@gmail.com>
+Date: Tue, 28 Nov 2023 14:02:17 -0600
+Subject: [PATCH] arm64: dts: imx8mm: Add optional overdrive DTSI
+
+For boards who run their SoC at a higher voltage than nominal,
+the boards can run several clocks at an overdrive rate for
+better performance.  Add an optional DTSI file which can be
+included by various boards to run in overdrive mode.
+
+This raises the GPU PLL to 1000MHz, and the VPU PLL to
+700MHz while moving VPU_G1 and VPU_H1 to the SYS_PLL3_OUT
+which runs at 750MHz.
+
+Upstream-Status: Backport [7832a091d768a005020a37c2568f76ae4147b809]
+Signed-off-by: Adam Ford <aford173@gmail.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+---
+ .../boot/dts/freescale/imx8mm-overdrive.dtsi  | 29 +++++++++++++++++++
+ 1 file changed, 29 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-overdrive.dtsi
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-overdrive.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-overdrive.dtsi
+new file mode 100644
+index 000000000000..b31436b5e9b7
+--- /dev/null
++++ b/arch/arm64/boot/dts/freescale/imx8mm-overdrive.dtsi
+@@ -0,0 +1,29 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++
++&gpu_2d {
++	assigned-clocks = <&clk IMX8MM_CLK_GPU2D_CORE>,
++			  <&clk IMX8MM_GPU_PLL_OUT>;
++	assigned-clock-parents = <&clk IMX8MM_GPU_PLL_OUT>;
++	assigned-clock-rates = <0>, <1000000000>;
++};
++
++&gpu_3d {
++	assigned-clocks = <&clk IMX8MM_CLK_GPU3D_CORE>,
++			  <&clk IMX8MM_GPU_PLL_OUT>;
++	assigned-clock-parents = <&clk IMX8MM_GPU_PLL_OUT>;
++	assigned-clock-rates = <0>, <1000000000>;
++};
++
++&vpu_blk_ctrl {
++	assigned-clocks = <&clk IMX8MM_CLK_VPU_G1>,
++			  <&clk IMX8MM_CLK_VPU_G2>,
++			  <&clk IMX8MM_CLK_VPU_H1>,
++			  <&clk IMX8MM_VPU_PLL_OUT>;
++	assigned-clock-parents = <&clk IMX8MM_SYS_PLL3_OUT>,
++				 <&clk IMX8MM_VPU_PLL_OUT>,
++				 <&clk IMX8MM_SYS_PLL3_OUT>;
++	assigned-clock-rates = <750000000>,
++			       <700000000>,
++			       <750000000>,
++			       <700000000>;
++};
+-- 
+2.34.1
+

@@ -1,0 +1,43 @@
+From 0d23846576b53b6a2a8391a29d44e82bf3aed588 Mon Sep 17 00:00:00 2001
+From: Ming Liu <ming.liu@toradex.com>
+Date: Tue, 28 Dec 2021 13:50:13 +0100
+Subject: [PATCH] Adjust main configuration
+
+- Blacklist rndis nic's, we want them handled by systemd's networkd.
+- Blacklist uap0 nic, we want it handled by the hostapd-example.
+- Disable background scan, to avoid significant increase in bandwidth.
+
+Upstream-Status: Inappropriate [Toradex specific]
+
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+Signed-off-by: Ming Liu <ming.liu@toradex.com>
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+---
+ src/main.conf | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/main.conf b/src/main.conf
+index 14965e1..24a17bf 100644
+--- a/src/main.conf
++++ b/src/main.conf
+@@ -23,7 +23,7 @@
+ # When BackgroundScanning is false, ConnMan will not perform any scan
+ # regardless of wifi is connected or not, unless it is requested by
+ # the user through a D-Bus call.
+-# BackgroundScanning = true
++BackgroundScanning = false
+ 
+ # Assume that service gateways also function as timeservers.
+ # UseGatewaysAsTimeservers = false
+@@ -67,7 +67,7 @@
+ # not be handled by ConnMan, if their first characters
+ # match any of the list entries. Default value is
+ # vmnet,vboxnet,virbr,ifb,ve-,vb-.
+-# NetworkInterfaceBlacklist = vmnet,vboxnet,virbr,ifb,ve-,vb-
++NetworkInterfaceBlacklist = vmnet,vboxnet,virbr,ifb,ve-,vb-,usb,rndis,uap0
+ 
+ # Allow ConnMan to change the system hostname. This can
+ # happen for example if we receive DHCP hostname option.
+-- 
+2.25.1
+

@@ -1,0 +1,90 @@
+From 6ce7472bcd056413f7396bbaff77248eda4de401 Mon Sep 17 00:00:00 2001
+From: Vitor Soares <vitor.soares@toradex.com>
+Date: Fri, 16 May 2025 10:39:55 +0100
+Subject: [PATCH] toradex: tdx-cfg-block: add new pid4 support
+
+Add the new PID4 to the ConfigBlock handling:
+ - 0098 Aquila iMX95 Hexa 16GB WB IT
+ - 0099 Verdin AM62P Quad 2GB WB IT
+ - 0201 SMARC iMX95 Hexa 8GB IT
+ - 0202 SMARC iMX95 Hexa 4GB WB IT
+ - 0203 SMARC iMX95 Hexa 4GB ET
+ - 0204 SMARC iMX95 Hexa 2GB WB IT
+ - 0205 SMARC iMX95 Hexa 2GB ET
+ - 0206 SMARC iMX8M Plus Quad 4GB IT
+ - 0207 SMARC iMX8M Plus Quad 2GB WB IT
+ - 0208 SMARC iMX8M Plus Quad 2GB IT
+ - 0209 SMARC iMX8M Plus Quadlite 1GB WB ET
+ - 0210 SMARC iMX8M Plus Quadlite 1GB ET
+ - 0211 Aquila AM69 Octa 32GB IT
+ - 0212 Aquila AM69 Octa 16GB WB IT
+ - 0213 Aquila AM69 Octa 16GB IT
+ - 0214 Aquila AM69 Octa 8GB WB IT
+ - 0215 Aquila AM69 Octa 8GB IT
+
+Upstream-Status: Submitted [https://lore.kernel.org/u-boot/20250519084630.376452-1-ivitro@gmail.com/]
+Signed-off-by: Vitor Soares <vitor.soares@toradex.com>
+---
+ board/toradex/common/tdx-cfg-block.c | 17 +++++++++++++++++
+ board/toradex/common/tdx-cfg-block.h | 17 +++++++++++++++++
+ 2 files changed, 34 insertions(+)
+
+diff --git a/board/toradex/common/tdx-cfg-block.c b/board/toradex/common/tdx-cfg-block.c
+index b3f277fd05ff..ce0e98dd2aa3 100644
+--- a/board/toradex/common/tdx-cfg-block.c
++++ b/board/toradex/common/tdx-cfg-block.c
+@@ -166,6 +166,23 @@ const struct toradex_som toradex_modules[] = {
+ 	{ APALIS_IMX8QM_8GB_WIFI_BT_IT_1300MHZ, "Apalis iMX8QM 8GB WB IT",           TARGET_IS_ENABLED(APALIS_IMX8)     },
+ 	{ SMARC_IMX95_HEXA_8GB_WB_IT,        "SMARC iMX95 Hexa 8GB WB IT",           0                                  },
+ 	{ SMARC_IMX8MPQ_4GB_WB_IT,           "SMARC iMX8M Plus Quad 4GB WB IT",      TARGET_IS_ENABLED(TORADEX_SMARC_IMX8MP) },
++	{ AQUILA_IMX95_HEXA_16GB_WB_IT,      "Aquila iMX95 Hexa 16GB WB IT",         TARGET_IS_ENABLED(AQUILA_IMX95)         },
++	{ VERDIN_AM62PQ_2G_WIFI_BT_IT,       "Verdin AM62P Quad 2GB WB IT",          TARGET_IS_ENABLED(VERDIN_AM62P_A53)     },
++	{ SMARC_IMX95_HEXA_8GB_IT,           "SMARC iMX95 Hexa 8GB IT",              TARGET_IS_ENABLED(TORADEX_SMARC_IMX95)  },
++	{ SMARC_IMX95_HEXA_4GB_WB_IT,        "SMARC iMX95 Hexa 4GB WB IT",           TARGET_IS_ENABLED(TORADEX_SMARC_IMX95)  },
++	{ SMARC_IMX95_HEXA_4GB_ET,           "SMARC iMX95 Hexa 4GB ET",              TARGET_IS_ENABLED(TORADEX_SMARC_IMX95)  },
++	{ SMARC_IMX95_HEXA_2GB_WB_IT,        "SMARC iMX95 Hexa 2GB WB IT",           TARGET_IS_ENABLED(TORADEX_SMARC_IMX95)  },
++	{ SMARC_IMX95_HEXA_2GB_ET,           "SMARC iMX95 Hexa 2GB ET",              TARGET_IS_ENABLED(TORADEX_SMARC_IMX95)  },
++	{ SMARC_IMX8MPQ_4GB_IT,              "SMARC iMX8M Plus Quad 4GB IT",         TARGET_IS_ENABLED(TORADEX_SMARC_IMX8MP) },
++	{ SMARC_IMX8MPQ_2GB_WB_IT,           "SMARC iMX8M Plus Quad 2GB WB IT",      TARGET_IS_ENABLED(TORADEX_SMARC_IMX8MP) },
++	{ SMARC_IMX8MPQ_2GB_IT,              "SMARC iMX8M Plus Quad 2GB IT",         TARGET_IS_ENABLED(TORADEX_SMARC_IMX8MP) },
++	{ SMARC_IMX8MPQL_1GB_WB_ET,          "SMARC iMX8M Plus Quadlite 1GB WB ET",  TARGET_IS_ENABLED(TORADEX_SMARC_IMX8MP) },
++	{ SMARC_IMX8MPQL_1GB_ET,             "SMARC iMX8M Plus Quadlite 1GB ET",     TARGET_IS_ENABLED(TORADEX_SMARC_IMX8MP) },
++	{ AQUILA_AM69O_32GB_IT,              "Aquila AM69 Octa 32GB IT",             TARGET_IS_ENABLED(AQUILA_AM69_A72)      },
++	{ AQUILA_AM69O_16GB_WB_IT,           "Aquila AM69 Octa 16GB WB IT",          TARGET_IS_ENABLED(AQUILA_AM69_A72)      },
++	{ AQUILA_AM69O_16GB_IT,              "Aquila AM69 Octa 16GB IT",             TARGET_IS_ENABLED(AQUILA_AM69_A72)      },
++	{ AQUILA_AM69O_8GB_WB_IT,            "Aquila AM69 Octa 8GB WB IT",           TARGET_IS_ENABLED(AQUILA_AM69_A72)      },
++	{ AQUILA_AM69O_8GB_IT,               "Aquila AM69 Octa 8GB IT",              TARGET_IS_ENABLED(AQUILA_AM69_A72)      },
+ };
+ 
+ struct pid4list {
+diff --git a/board/toradex/common/tdx-cfg-block.h b/board/toradex/common/tdx-cfg-block.h
+index 4a29c0bca848..6a7e040da5aa 100644
+--- a/board/toradex/common/tdx-cfg-block.h
++++ b/board/toradex/common/tdx-cfg-block.h
+@@ -124,6 +124,23 @@ enum {
+ 	APALIS_IMX8QM_8GB_WIFI_BT_IT_1300MHZ, /* 95 */
+ 	SMARC_IMX95_HEXA_8GB_WB_IT,
+ 	SMARC_IMX8MPQ_4GB_WB_IT,
++	AQUILA_IMX95_HEXA_16GB_WB_IT,
++	VERDIN_AM62PQ_2G_WIFI_BT_IT, /* 99 */
++	SMARC_IMX95_HEXA_8GB_IT = 201,
++	SMARC_IMX95_HEXA_4GB_WB_IT,
++	SMARC_IMX95_HEXA_4GB_ET,
++	SMARC_IMX95_HEXA_2GB_WB_IT,
++	SMARC_IMX95_HEXA_2GB_ET, /* 205 */
++	SMARC_IMX8MPQ_4GB_IT,
++	SMARC_IMX8MPQ_2GB_WB_IT,
++	SMARC_IMX8MPQ_2GB_IT,
++	SMARC_IMX8MPQL_1GB_WB_ET,
++	SMARC_IMX8MPQL_1GB_ET, /* 210 */
++	AQUILA_AM69O_32GB_IT,
++	AQUILA_AM69O_16GB_WB_IT,
++	AQUILA_AM69O_16GB_IT,
++	AQUILA_AM69O_8GB_WB_IT,
++	AQUILA_AM69O_8GB_IT, /* 215 */
+ };
+ 
+ enum {
+-- 
+2.34.1
+

@@ -1,0 +1,29 @@
+From fcf27214f779478b449ea5ffe6d915fd6057cade Mon Sep 17 00:00:00 2001
+From: Igor Opaniuk <igor.opaniuk@toradex.com>
+Date: Mon, 30 Nov 2020 15:17:30 +0200
+Subject: [PATCH] connman: clock: ntp client should not update time/timezone
+
+NTP client should not update time/timezone unless otherwise stated
+explicitly in the settings.
+
+Upstream-Status: Inappropriate [configuration]
+Signed-off-by: Igor Opaniuk <igor.opaniuk@toradex.com>
+---
+ src/clock.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/clock.c b/src/clock.c
+index 0fde2c3..c9a26c6 100644
+--- a/src/clock.c
++++ b/src/clock.c
+@@ -35,8 +35,8 @@ enum timezone_updates {
+ 	TIMEZONE_UPDATES_AUTO    = 2,
+ };
+ 
+-static enum time_updates time_updates_config = TIME_UPDATES_AUTO;
+-static enum timezone_updates timezone_updates_config = TIMEZONE_UPDATES_AUTO;
++static enum time_updates time_updates_config = TIME_UPDATES_MANUAL;
++static enum timezone_updates timezone_updates_config = TIME_UPDATES_MANUAL;
+ 
+ static char *timezone_config = NULL;
+ 

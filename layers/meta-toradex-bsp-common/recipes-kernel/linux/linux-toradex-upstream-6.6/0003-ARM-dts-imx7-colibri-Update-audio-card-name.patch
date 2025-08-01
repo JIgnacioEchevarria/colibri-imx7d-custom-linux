@@ -1,0 +1,35 @@
+From 38ef21b3084ba9ea912165ffd671be26b70eca2d Mon Sep 17 00:00:00 2001
+From: Hiago De Franco <hiago.franco@toradex.com>
+Date: Fri, 6 Sep 2024 16:26:53 +0200
+Subject: [PATCH 3/3] ARM: dts: imx7-colibri: Update audio card name
+
+Update the audio card name for Colibri iMX7 to match its specific SoM
+name, making it compliant with the other names for Colibri iMX6 and
+Apalis iMX6.
+
+While this is a breaking change for userspace tooling, it seems
+time to implement it since no ALSA UCM or related configuration files
+currently exist and we are in the the process of creating them.
+
+Upstream-Status: Submitted [https://lore.kernel.org/lkml/20241010171128.107819-1-hiagofranco@gmail.com/]
+Signed-off-by: Hiago De Franco <hiago.franco@toradex.com>
+---
+ arch/arm/boot/dts/nxp/imx/imx7-colibri.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/nxp/imx/imx7-colibri.dtsi b/arch/arm/boot/dts/nxp/imx/imx7-colibri.dtsi
+index 62e41edcaf1d..8666dcd7fe97 100644
+--- a/arch/arm/boot/dts/nxp/imx/imx7-colibri.dtsi
++++ b/arch/arm/boot/dts/nxp/imx/imx7-colibri.dtsi
+@@ -120,7 +120,7 @@ sound {
+ 		simple-audio-card,bitclock-master = <&dailink_master>;
+ 		simple-audio-card,format = "i2s";
+ 		simple-audio-card,frame-master = <&dailink_master>;
+-		simple-audio-card,name = "imx7-sgtl5000";
++		simple-audio-card,name = "colibri-imx7";
+ 
+ 		simple-audio-card,cpu {
+ 			sound-dai = <&sai1>;
+-- 
+2.39.5
+

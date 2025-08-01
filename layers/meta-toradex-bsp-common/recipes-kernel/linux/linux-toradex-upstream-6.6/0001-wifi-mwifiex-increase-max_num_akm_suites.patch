@@ -1,0 +1,37 @@
+From 00f2145cf41542525a753f47e3d01eee7d5c595f Mon Sep 17 00:00:00 2001
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Date: Thu, 30 May 2024 15:01:56 +0200
+Subject: [PATCH 01/10] wifi: mwifiex: increase max_num_akm_suites
+
+The maximum number of AKM suites will be set to two if not specified by
+the driver. Set it to CFG80211_MAX_NUM_AKM_SUITES to let userspace
+specify up to ten AKM suites in the akm_suites array.
+
+Without only the first two AKM suites will be used, further ones are
+ignored.
+
+Upstream-Status: Backport [e8b7d0c66a4ddbae909534cda515fbb56771d4bf]
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Acked-by: Brian Norris <briannorris@chromium.org>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://patch.msgid.link/20240530130156.1651174-1-s.hauer@pengutronix.de
+---
+ drivers/net/wireless/marvell/mwifiex/cfg80211.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/wireless/marvell/mwifiex/cfg80211.c b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
+index b7ead0cd0045..fc61fbe123d8 100644
+--- a/drivers/net/wireless/marvell/mwifiex/cfg80211.c
++++ b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
+@@ -4359,6 +4359,8 @@ int mwifiex_register_cfg80211(struct mwifiex_adapter *adapter)
+ 				 BIT(NL80211_IFTYPE_P2P_GO) |
+ 				 BIT(NL80211_IFTYPE_AP);
+ 
++	wiphy->max_num_akm_suites = CFG80211_MAX_NUM_AKM_SUITES;
++
+ 	if (ISSUPP_ADHOC_ENABLED(adapter->fw_cap_info))
+ 		wiphy->interface_modes |= BIT(NL80211_IFTYPE_ADHOC);
+ 
+-- 
+2.34.1
+

@@ -1,0 +1,37 @@
+From d4699c60c773e75a68227f82afea0b607667a4c0 Mon Sep 17 00:00:00 2001
+From: "Marcel Ziswiler" <marcel.ziswiler@toradex.com>>
+Date: Thu, 22 Dec 2016 11:34:31 +0100
+Subject: [PATCH] add geometry input when calibrating
+
+Send monitor geometry to xinput_calibrator when running the script
+Update:
+        Remove bashism
+
+Upstream-Status: Inappropriate [no longer maintained]
+
+Multihead capability update curtsy Toradex.
+
+Signed-off-by: Jonathan David <jonathan.david@ni.com>
+Signed-off-by: Maxin B. John <maxin.john@intel.com>
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+---
+ scripts/xinput_calibrator_pointercal.sh | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/scripts/xinput_calibrator_pointercal.sh b/scripts/xinput_calibrator_pointercal.sh
+index fccb197..fea7c2f 100755
+--- a/scripts/xinput_calibrator_pointercal.sh
++++ b/scripts/xinput_calibrator_pointercal.sh
+@@ -24,7 +24,8 @@ if [ -e $CALFILE ] ; then
+   fi
+ fi
+ 
+-CALDATA=`$BINARY --output-type xinput -v | tee $LOGFILE | grep '    xinput set' | sed 's/^    //g; s/$/;/g'`
++RESOLUTION=$(xrandr | awk -F '[[:space:]+]' '/ connected/ { if ($3 != "primary") print $3; if ($3 == "primary") print $4 }' | sed q)
++CALDATA=`$BINARY --geometry $RESOLUTION --output-type xinput -v | tee $LOGFILE | grep '    xinput set' | sed 's/^    //g; s/$/;/g'`
+ if [ ! -z "$CALDATA" ] ; then
+   echo $CALDATA > $CALFILE
+   echo "Calibration data stored in $CALFILE (log in $LOGFILE)"
+-- 
+2.4.0
+

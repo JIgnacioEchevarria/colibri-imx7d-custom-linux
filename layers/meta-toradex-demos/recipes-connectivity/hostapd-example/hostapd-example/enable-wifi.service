@@ -1,0 +1,13 @@
+[Unit]
+Description=Enable Wifi
+BindsTo=sys-subsystem-net-devices-uap0.device
+After=sys-subsystem-net-devices-uap0.device
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/connmanctl enable wifi
+ExecStop=
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

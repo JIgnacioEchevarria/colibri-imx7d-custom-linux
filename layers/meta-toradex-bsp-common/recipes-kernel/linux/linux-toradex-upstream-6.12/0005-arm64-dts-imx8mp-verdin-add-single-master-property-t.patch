@@ -1,0 +1,64 @@
+From a470c396452e4677c672e7685276df1f6b63ec45 Mon Sep 17 00:00:00 2001
+From: Stefan Eichenberger <stefan.eichenberger@toradex.com>
+Date: Fri, 25 Oct 2024 09:05:12 +0200
+Subject: [PATCH 5/5] arm64: dts: imx8mp-verdin: add single-master property to
+ all i2c nodes
+
+By default we expect all i2c nodes to be single-master, we do not have
+any module or carrier board that uses multi-master mode on any i2c
+controller. With this property set, we benefit from optimisations made
+exclusively for single-masters.
+
+Upstream-Status: Submitted [https://lore.kernel.org/all/20241025095915.22313-1-eichest@gmail.com]
+Signed-off-by: Stefan Eichenberger <stefan.eichenberger@toradex.com>
+---
+ arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi b/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
+index d23a3942174d8..304395cf535d5 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
+@@ -470,6 +470,7 @@ &i2c1 {
+ 	pinctrl-1 = <&pinctrl_i2c1_gpio>;
+ 	scl-gpios = <&gpio5 14 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+ 	sda-gpios = <&gpio5 15 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++	single-master;
+ 	status = "okay";
+ 
+ 	pca9450: pmic@25 {
+@@ -661,6 +662,7 @@ &i2c2 {
+ 	pinctrl-1 = <&pinctrl_i2c2_gpio>;
+ 	scl-gpios = <&gpio5 16 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+ 	sda-gpios = <&gpio5 17 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++	single-master;
+ 
+ 	atmel_mxt_ts_mezzanine: touch-mezzanine@4a {
+ 		compatible = "atmel,maxtouch";
+@@ -682,6 +684,7 @@ &i2c3 {
+ 	pinctrl-1 = <&pinctrl_i2c3_gpio>;
+ 	scl-gpios = <&gpio5 18 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+ 	sda-gpios = <&gpio5 19 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++	single-master;
+ };
+ 
+ /* Verdin I2C_1 */
+@@ -692,6 +695,7 @@ &i2c4 {
+ 	pinctrl-1 = <&pinctrl_i2c4_gpio>;
+ 	scl-gpios = <&gpio5 20 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+ 	sda-gpios = <&gpio5 21 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++	single-master;
+ 
+ 	gpio_expander_21: gpio-expander@21 {
+ 		compatible = "nxp,pcal6416";
+@@ -780,6 +784,7 @@ &i2c5 {
+ 	pinctrl-1 = <&pinctrl_i2c5_gpio>;
+ 	scl-gpios = <&gpio3 26 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+ 	sda-gpios = <&gpio3 27 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++	single-master;
+ };
+ 
+ /* Verdin PCIE_1 */
+-- 
+2.43.0
+

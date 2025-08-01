@@ -1,0 +1,41 @@
+From aace1edbc4ccf7b25f92c37cbfced0f332f62bca Mon Sep 17 00:00:00 2001
+From: Hiago De Franco <hiago.franco@toradex.com>
+Date: Fri, 6 Sep 2024 16:24:47 +0200
+Subject: [PATCH 2/3] ARM: dts: imx6qdl-colibri: Update audio card name
+
+Update the audio card name for Colibri iMX6 to match its specific SoM
+name, making it less than 15 characters to fix the following warning
+
+fsl-asoc-card sound: ASoC: driver name too long
+'imx6dl-colibri-sgtl5000' -> 'imx6dl-colibri-'
+
+making it compliant with the ALSA configuration specification [1].
+
+While this is a breaking change for userspace tooling, it seems
+time to implement it since no ALSA UCM or related configuration files
+currently exist and we are in the the process of creating them.
+
+[1] Documentation/sound/alsa-configuration.rst
+
+Upstream-Status: Submitted [https://lore.kernel.org/lkml/20241010171128.107819-1-hiagofranco@gmail.com/]
+Signed-off-by: Hiago De Franco <hiago.franco@toradex.com>
+---
+ arch/arm/boot/dts/nxp/imx/imx6qdl-colibri.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/nxp/imx/imx6qdl-colibri.dtsi b/arch/arm/boot/dts/nxp/imx/imx6qdl-colibri.dtsi
+index b01670cdd52c..9f33419c260b 100644
+--- a/arch/arm/boot/dts/nxp/imx/imx6qdl-colibri.dtsi
++++ b/arch/arm/boot/dts/nxp/imx/imx6qdl-colibri.dtsi
+@@ -136,7 +136,7 @@ sound {
+ 			"LINE_IN", "Line In Jack",
+ 			"MIC_IN", "Mic Jack",
+ 			"Mic Jack", "Mic Bias";
+-		model = "imx6dl-colibri-sgtl5000";
++		model = "colibri-imx6";
+ 		mux-int-port = <1>;
+ 		mux-ext-port = <5>;
+ 		ssi-controller = <&ssi1>;
+-- 
+2.39.5
+

@@ -1,0 +1,48 @@
+From faab3784ce6eeeef4c24a6a04da102991ef306c1 Mon Sep 17 00:00:00 2001
+From: Francesco Dolcini <francesco.dolcini@toradex.com>
+Date: Wed, 30 Apr 2025 11:41:47 +0200
+Subject: [PATCH 5/8] arm64: dts: freescale: imx8mp-toradex-smarc: add fan PWM
+ configuration
+
+Configure correctly the FAN pwm output (inverted).
+
+Upstream-Status: Backport [8c7432dc2ab0e0106124b0416a6a21613b294655]
+Reviewed-by: Peng Fan <peng.fan@nxp.com>
+Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+---
+ .../boot/dts/freescale/imx8mp-toradex-smarc-dev.dts      | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mp-toradex-smarc-dev.dts b/arch/arm64/boot/dts/freescale/imx8mp-toradex-smarc-dev.dts
+index 581f221323b7..55b8c5c14fb4 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mp-toradex-smarc-dev.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mp-toradex-smarc-dev.dts
+@@ -3,6 +3,8 @@
+ 
+ /dts-v1/;
+ 
++#include <dt-bindings/pwm/pwm.h>
++
+ #include "imx8mp-toradex-smarc.dtsi"
+ 
+ / {
+@@ -205,9 +207,14 @@ &i2c6 {
+ 	status = "okay";
+ 
+ 	/* Fan controller */
+-	fan@18 {
++	fan_controller: fan@18 {
+ 		compatible = "ti,amc6821";
+ 		reg = <0x18>;
++		#pwm-cells = <2>;
++
++		fan {
++			pwms = <&fan_controller 40000 PWM_POLARITY_INVERTED>;
++		};
+ 	};
+ 
+ 	/* Current measurement into module VDD */
+-- 
+2.39.5
+

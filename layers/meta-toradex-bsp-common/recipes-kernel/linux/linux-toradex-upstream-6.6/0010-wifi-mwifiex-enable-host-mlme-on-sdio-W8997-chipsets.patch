@@ -1,0 +1,32 @@
+From 1efadd4c280a742b659924b236af58e0ce79f491 Mon Sep 17 00:00:00 2001
+From: Rafael Beims <rafael.beims@toradex.com>
+Date: Wed, 21 May 2025 07:19:34 -0300
+Subject: [PATCH 10/10] wifi: mwifiex: enable host mlme on sdio W8997 chipsets
+
+Enable the host mlme flag for W8997 chipsets so WPA3 can be used.
+This feature depends on firmware support (V2 API key), which may not be
+available in all available firmwares.
+
+Upstream-Status: Submitted [https://lore.kernel.org/all/20250521101950.1220793-1-rafael@beims.me/
+Signed-off-by: Rafael Beims <rafael.beims@toradex.com>
+Reviewed-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+---
+ drivers/net/wireless/marvell/mwifiex/sdio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/marvell/mwifiex/sdio.c b/drivers/net/wireless/marvell/mwifiex/sdio.c
+index e655d1eb96e3..69022d97e7c8 100644
+--- a/drivers/net/wireless/marvell/mwifiex/sdio.c
++++ b/drivers/net/wireless/marvell/mwifiex/sdio.c
+@@ -438,7 +438,7 @@ static const struct mwifiex_sdio_device mwifiex_sdio_sd8997 = {
+ 	.can_auto_tdls = false,
+ 	.can_ext_scan = true,
+ 	.fw_ready_extra_delay = false,
+-	.host_mlme = false,
++	.host_mlme = true,
+ };
+ 
+ static const struct mwifiex_sdio_device mwifiex_sdio_sd8887 = {
+-- 
+2.34.1
+

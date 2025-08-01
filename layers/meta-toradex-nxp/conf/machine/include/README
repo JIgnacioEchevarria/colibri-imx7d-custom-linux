@@ -1,0 +1,2 @@
+The ${MACHINE}.inc files need to get included from machine config or
+local.conf.
