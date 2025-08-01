@@ -1,0 +1,1 @@
+# Yocto Project - Custom Linux Colibri iMX7D with Qt6
